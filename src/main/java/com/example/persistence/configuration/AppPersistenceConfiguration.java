@@ -77,6 +77,17 @@ public class AppPersistenceConfiguration {
 		map.put("hibernate.show_sql", this.environment.getProperty("hibernate.show_sql"));
 		map.put("hibernate.show_sql", this.environment.getProperty("hibernate.show_sql"));
 		map.put("use_sql_comments", this.environment.getProperty("use_sql_comments"));
+		
+		// Define DataSource properties using environment variables and property
+		// sources. (We can't use environment variables in persistence..xml, may be can
+		// but not easily.)
+		// NOTE: We could externalize the DataSource properties but, it is still using
+		// hibernate's native dataSource (connection pool) which is not production reay.
+		map.put("javax.persistence.jdbc.url",  this.environment.getProperty("db_connection_url"));
+		map.put("javax.persistence.jdbc.user",  this.environment.getProperty("DB_USER"));
+		map.put("javax.persistence.jdbc.password", this.environment.getProperty("DB_PASSWORD"));
+		map.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
+		
 		return map;
 	}
 }
