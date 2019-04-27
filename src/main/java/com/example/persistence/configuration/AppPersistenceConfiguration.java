@@ -1,7 +1,9 @@
-package com.example.persistence.configuration;
+ package com.example.persistence.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +14,16 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Configuration class defines configurations for DataSource and ORM.
@@ -89,5 +98,52 @@ public class AppPersistenceConfiguration {
 		map.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
 		
 		return map;
+	}
+	
+	@Bean
+	@Profile(value = { "int", "prod" })
+	public DataSource hikariCpDataSource() {
+		HikariConfig config = new HikariConfig();
+		config.setJdbcUrl(this.environment.getProperty("db_connection_url"));
+		config.setUsername(this.environment.getProperty("DB_USER"));
+		config.setPassword(this.environment.getProperty("DB_PASSWORD"));
+
+		return new HikariDataSource(config);
+	}
+
+	@Bean
+	@Profile(value = { "int", "prod" })
+	public JpaVendorAdapter hibernateJpaVendorAdapter() {
+		HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
+		jpaVendorAdapter.setDatabase(Database.POSTGRESQL);
+		jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
+		jpaVendorAdapter.setGenerateDdl(true);
+		jpaVendorAdapter.setShowSql(true);
+
+		return jpaVendorAdapter;
+	}
+
+	@Bean
+	@Profile(value = { "int", "prod" })
+	public LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean(DataSource dataSource,
+			JpaVendorAdapter adapter) {
+		LocalContainerEntityManagerFactoryBean containerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+		containerEntityManagerFactoryBean.setDataSource(dataSource);
+		containerEntityManagerFactoryBean.setJpaVendorAdapter(adapter);
+
+		// We must to define this if persistenec.xml file it not used at all. Spring
+		// needs to know location of entities.
+		// So, either persistence.xml or this is required.
+		// refer:
+		// https://stackoverflow.com/questions/37496293/spring-jpa-java-lang-illegalstateexception-no-persistence-units-parsed-from-cl
+		containerEntityManagerFactoryBean.setPackagesToScan("com.example.persistence.model");
+
+		// we can define persistence-unit here, which does not event belongs to any
+		// persistence.xml file.
+		// so, it's like creating pu on the fly using java config.
+		// It's completely ok to omit setting this, in that case persistence unit name
+		// will be 'default'.
+		containerEntityManagerFactoryBean.setPersistenceUnitName("foo-unit");
+		return containerEntityManagerFactoryBean;
 	}
 }
