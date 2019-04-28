@@ -1,17 +1,16 @@
  package com.example.persistence.configuration;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -36,15 +35,23 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:jpa-properties.properties")
+// @EnableJpaRepositories expects transaction manager with name 'transactionManager' and EM Factory as 'entitymanagerFactory' as default.
+// if we have beans with different names, we can override these default using transactionManagerRef and entitymanagerFactoryRef
+@EnableJpaRepositories(basePackages = "com.example.persistence.dao") // we must set basePackages to scan
 public class AppPersistenceConfiguration {
 
-	@Autowired
-	Environment environment;
+	@Resource
+	public Environment environment;
 
-	@Value("${PERSISTENCE_UNIT_NAME}")
-	private String persistenceUnitName;
-
-	@Bean
+	/**
+	 * @EnableJpaRepository expects transaction manager bean with name 'transactionManager' as a default. So,
+	 * adding additional bean name to match defaults. We can set/override default name using transactionManagerRef attribute 
+	 * of @EnableJpaRepositories annotation, but I don't want o hard code bean name, and want to chose one based on active profile.
+	 * 
+	 * @param entityManagerFactoryBean
+	 * @return
+	 */
+	@Bean(name = "transactionManager")
 	public PlatformTransactionManager jpaTransactionManager(AbstractEntityManagerFactoryBean entityManagerFactoryBean) {
 		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
 		jpaTransactionManager.setEntityManagerFactory(entityManagerFactoryBean.getObject());
@@ -64,11 +71,11 @@ public class AppPersistenceConfiguration {
 	 * 
 	 * @return LocalEntityManagerFactoryBean
 	 */
-	@Bean
+	@Bean(name = "entityManagerFactory") // additional bean name to match default name expected by @EnableJpaRepository
 	@Profile("dev")
 	public LocalEntityManagerFactoryBean localEntityManagerFactoryBean(JpaPropertySource jpaPropertySource) {
 		LocalEntityManagerFactoryBean entityManagerFactoryBean = new LocalEntityManagerFactoryBean();
-		entityManagerFactoryBean.setPersistenceUnitName(persistenceUnitName);
+		entityManagerFactoryBean.setPersistenceUnitName(environment.getProperty("PERSISTENCE_UNIT_NAME"));
 
 		// We can set/override properties set in persistence.xml
 		entityManagerFactoryBean.setJpaPropertyMap(jpaPropertySource.getJpaPropertyMap());
@@ -99,7 +106,7 @@ public class AppPersistenceConfiguration {
 		return jpaVendorAdapter;
 	}
 
-	@Bean
+	@Bean(name = "entityManagerFactory") // additional bean name to match default name expected by @EnableJpaRepository
 	@Profile(value = { "int", "prod" })
 	public LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean(DataSource dataSource,
 			JpaVendorAdapter adapter, JpaPropertySource jpaPropertySource) {
@@ -156,10 +163,5 @@ public class AppPersistenceConfiguration {
 																	// @Repository. (which is default)
 
 		return postProcessor;
-	}
-	
-	@Bean 
-	public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
 	}
 }

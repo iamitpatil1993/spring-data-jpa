@@ -127,6 +127,20 @@
 				because we are using org.h2.Server at compile time -->
 		</dependency>
 
+		<!-- Need to add this to acces spring-data-jpa repository features -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>2.1.6.RELEASE</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.framework.version}</version>
+		</dependency> 
+		
+
 		<!-- DataSource Connection pool -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -152,15 +166,6 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>6.0.16.Final</version>
 		</dependency>
-
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.framework.version}</version>
-		</dependency> 
-		
-		
 
 	</dependencies>
 
