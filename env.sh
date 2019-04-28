@@ -1,5 +1,5 @@
 export PERSISTENCE_UNIT_NAME=my-pu
-export SPRING_PROFILES_ACTIVE=prod
+export SPRING_PROFILES_ACTIVE=int
 export DB_USER=pgdbusername
 export DB_PASSWORD=pgdbpass
 
