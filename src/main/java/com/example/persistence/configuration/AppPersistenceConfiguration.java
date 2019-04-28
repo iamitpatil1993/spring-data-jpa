@@ -7,11 +7,13 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -23,6 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.example.persistence.configuration.jpa.JpaPropertySource;
+import com.example.persistence.dao.JPA;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -124,5 +127,37 @@ public class AppPersistenceConfiguration {
 		// set jpa properties programmatically
 		containerEntityManagerFactoryBean.setJpaPropertyMap(jpaPropertySource.getJpaPropertyMap());
 		return containerEntityManagerFactoryBean;
+	}
+	
+	/**
+	 * This is post processor bean that does/enables the translation of persistene
+	 * exceptions into to generic spring specfic exception hierarch topped by
+	 * DataAccessException.
+	 * 
+	 * This bean actually enables exception translation for beans in application
+	 * context marked with @Repository annotation. It actually enables one advice
+	 * PersistenceExceptionTranslationAdvisor on pointcut that matches all beans in
+	 * application context that are annoted with @Repository annotation.
+	 * 
+	 * After just defining this bean, all beans in application context annoted
+	 * with @Repository will get advised to translate exceptions.
+	 * 
+	 * @return
+	 */
+	@Bean
+	public BeanPostProcessor persistenceExceptonTranslationPostProcessor() {
+
+		PersistenceExceptionTranslationPostProcessor postProcessor = new PersistenceExceptionTranslationPostProcessor();
+
+		// we can change the pointcut to match something different annotation, may be
+		// custom.
+		// Since out repository class CustomJpaEmployeeDao is annoted with custom
+		// annotation JPA, it will get advised and exceptions will get translated
+
+		// postProcessor.setRepositoryAnnotationType(JPA.class);; 	// uncomment this to
+																	// match classes annoted with @Jpa to get advise for translation instead of
+																	// @Repository. (which is default)
+
+		return postProcessor;
 	}
 }
