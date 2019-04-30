@@ -23,9 +23,17 @@
 	<logger name="org.springframework.beans">
 		<level value="info" />
 	</logger>
-	
-	<logger name="org.springframework.context">
-		<level value="info" />
+
+	<!-- Enable logging of sql statements as a DEBUG log (loggs will be sent 
+		to configured appenders,, instead of standard output -->	
+	<logger name="org.hibernate.SQL">
+		<level value="INFO" /> <!-- change this to DEBUG to log queries -->
+	</logger>
+
+	<!-- Enable logging of sql prepared statement bind values as a TRACE level 
+		log. -->
+	<logger name="org.hibernate.type.descriptor.sql.BasicBinder">
+		<level value="INFO" /> <!-- change this to TRACE to enable value logging -->
 	</logger>
 	
 	<!-- Root Logger -->
