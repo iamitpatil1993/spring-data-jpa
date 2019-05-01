@@ -1,18 +1,25 @@
 package com.example.persistence.dao.auto;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
@@ -23,8 +30,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.persistence.BaseTest;
 import com.example.persistence.model.Patient;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING) // just for readability of logs (queries executed by test cases)
 public class PatientRepositoryTest extends BaseTest {
 
 	@Autowired
@@ -224,7 +233,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 	
 	/**
-	 * CrudRepository: Save	
+	 * CrudRepository: Save, existsById
 	 */
 	@Test
 	public void testSave() {
@@ -238,7 +247,143 @@ public class PatientRepositoryTest extends BaseTest {
 		assertNotNull(patient.getId());
 		assertTrue(patientRepository.existsById(patient.getId()));
 	}
+	
+	/**
+	 * CrudRepository: count -> Finds count of all entities in database for given entity type
+	 */
+	@Test
+	public void testCount() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		long count = patientRepository.count();
+		
+		// then
+		assertTrue(count > 0);
+	}
 
+	/**
+	 * CrudRepository: delete
+	 */
+	@Test
+	public void testDelete() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient); // save called transaction created and completed, so this returned entity is
+		// detached, rather there is no persitence context here.
+		// (It will be there when we will be using service layer to demarcate the
+		// transactions)
+
+		// when
+		patientRepository.delete(patient); // as we know, in order to delete entity, entity must be managed in current
+		// persistence context. In this case, there is no
+		// transaction prior to calling this delete method, so delete method starts NEW
+		// transaction (so new persistence context created), in which our entity is not
+		// managed.
+		// so, CrudRepository.delete() implementation SimpleJpaRepository first check
+		// entity is managed in current persistence context, if no then it first fetch
+		// the
+		// entity to make it managed in current persistence context and then deletes it.
+		// so, we don't have to worry about, ensuring entity we are passing to delete
+		// needs to be managed, spring handles it.
+
+		// then
+		assertFalse(patientRepository.findById(patient.getId()).isPresent());
+	}
+	
+	/**
+	 * CrudRepository: deleteAll
+	 */
+	@Test
+	public void testDeleteAll() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		// when
+		patientRepository.deleteAll(); // so much expensive, first it finds all entities, then it calls
+										// CrudRepository.delete() in loop for all.
+		// so it does not deletes all entities using sql/named query in order to sync data with
+		// persistence context.
+		// so, queries executed are (n + 1) minimum, where n is number of records in
+		// database in best case. In worst case if entities are not managed,
+		// will be (1 + 2n)
+
+		// then
+		assertEquals(0, patientRepository.count());
+	}
+	
+	/**
+	 * CrudRepository: deleteAll(Iterable<T> entities), findAllById(Iterable<T> ids)
+	 */
+	@Test
+	public void testDeleteAllIterable() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		Patient anotherPatient = createTestPatient();
+		patientRepository.save(anotherPatient);
+
+		// when
+		patientRepository.deleteAll(Arrays.asList(patient, anotherPatient)); // calls CrudRepository.delete(Entity) in iteration.
+
+		// then
+		assertThat(patientRepository.findAllById(Arrays.asList(patient.getId(), anotherPatient.getId())), empty());
+	}
+	
+	/**
+	 * CrudRepository: deleteById(ID<T> id), findById(ID id)
+	 */
+	@Test
+	public void testDeleteByIdWithEntityExistsById() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		// when
+		patientRepository.deleteById(patient.getId()); // first finds entity and then delete it
+
+		// then
+		assertThat(patientRepository.findById(patient.getId()).isPresent(), is(false));
+	}
+
+	/**
+	 * CrudRepository: deleteById(ID<T> id), findById(ID id)
+	 */
+	@Test(expected = EmptyResultDataAccessException.class)
+	public void testDeleteByIdWithNotEntityExistsById() {
+		// given
+		Integer patientId = 12321;
+
+		// when
+		patientRepository.deleteById(patientId); // throws EmptyResultDataAccessException, since entity does not exists by ID
+	}
+	
+	/**
+	 * CrudRepository: saveAll(iterable<T> entities)
+	 */
+	@Test
+	public void testSaveAll() {
+		// given
+		Patient patient = createTestPatient();
+		Patient patient1 = createTestPatient();
+		Patient patient2 = createTestPatient();
+		;
+
+		// when
+		patientRepository.saveAll(Arrays.asList(patient, patient1, patient2)); // calls CrudRepository.save in
+		// iteration.
+		// it manages transaction by default as repository methods are Transactional by
+		// default.
+
+		// then
+		assertThat(patientRepository.findAllById(Arrays.asList(patient.getId(), patient1.getId(), patient2.getId())),
+				hasSize(3));
+	}	
+	
 	private Patient createTestPatient() {
 		Patient patient = new Patient();
 		patient.setFirstName("Bob");
