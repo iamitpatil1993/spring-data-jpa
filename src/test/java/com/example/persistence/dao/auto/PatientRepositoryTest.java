@@ -2,8 +2,8 @@ package com.example.persistence.dao.auto;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Calendar;
 import java.util.List;
@@ -29,25 +29,10 @@ public class PatientRepositoryTest extends BaseTest {
 
 	@Autowired
 	private PatientRepository patientRepository;
-
-	@Test
-	public void testSave() {
-		// given 
-		Patient patient = new Patient();
-		patient.setFirstName("Bob");
-		patient.setLastName("Sargent");
-		Calendar dob = Calendar.getInstance();
-		dob.add(Calendar.YEAR, -20);
-		patient.setDob(dob);
-
-		// when
-		patientRepository.save(patient);
-
-		// then
-		assertNotNull(patient.getId());
-		assertTrue(patientRepository.existsById(patient.getId()));
-	}
-
+	
+	/**
+	 * QueryByExampleExecutor: count  
+	 */
 	@Test
 	public void testCountByUsingQBE() {
 		// when
@@ -65,7 +50,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 
 	/**
-	 * Creates ExampleMatcher to match records by firstName or lastName
+	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName or lastName
 	 */
 	@Test
 	public void testFindAllUsingQBEByFirstNameOrLastName() {
@@ -87,7 +72,7 @@ public class PatientRepositoryTest extends BaseTest {
 
 
 	/**
-	 * Creates ExampleMatcher to match records by firstName And lastName
+	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName And lastName
 	 */
 	@Test
 	public void testFindAllUsingQBEByFirstNameAndLastName() {
@@ -108,7 +93,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 
 	/**
-	 * Creates ExampleMatcher to match records by firstName And lastName with contains condition and ignorecase
+	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName And lastName with contains condition and ignorecase
 	 */
 	@Test
 	public void testFindAllUsingQBEByFirstNameAndLastNameIgnoreCase() {
@@ -130,7 +115,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 
 	/**
-	 * Creates ExampleMatcher to create field specific matching condition.
+	 * QueryByExampleExecutor: Creates ExampleMatcher to create field specific matching condition.
 	 */
 	@Test
 	public void testFindAllUsingQBEByFirstNameStartsWithAndLastNameEndsWithAndIgnoreCaseForLastName() {
@@ -153,7 +138,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 
 	/**
-	 * Creates ExampleMatcher to ignore matching of specific fields.
+	 * QueryByExampleExecutor: Creates ExampleMatcher to ignore matching of specific fields.
 	 */
 	@Test
 	public void testFindAllUsingQBEByFirstNameAndLastNameIgnoringIsDeleted() {
@@ -175,7 +160,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 
 	/**
-	 * Creates ExampleMatcher with PropertyValueTransformer, to transform property value before use in query.
+	 * QueryByExampleExecutor: Creates ExampleMatcher with PropertyValueTransformer, to transform property value before use in query.
 	 */
 	@Test
 	public void testFindAllUsingQBEByFirstNameWithPropertyValueTransformer() {
@@ -203,7 +188,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 
 	/**
-	 * Uses QueryByExampleExecutor.exists() to check record exists by Example
+	 * QueryByExampleExecutor: Uses QueryByExampleExecutor.exists() to check record exists by Example
 	 */
 	@Test
 	public void testExistsUsingQBEByFirstName() {
@@ -221,7 +206,7 @@ public class PatientRepositoryTest extends BaseTest {
 	}
 
 	/**
-	 * Creates ExampleMatcher find all by firstName and uses QueryByExampleExecutor.findAll(Example, Sort) version to sort records.
+	 * QueryByExampleExecutor: Creates ExampleMatcher find all by firstName and uses QueryByExampleExecutor.findAll(Example, Sort) version to sort records.
 	 */
 	@Test
 	public void testFindAllUsingQBEByFirstNameStartsWitSortByFirstNameAscAndLastNameDesc() {
@@ -236,5 +221,31 @@ public class PatientRepositoryTest extends BaseTest {
 
 		// then
 		assertEquals(0, patients.size());
+	}
+	
+	/**
+	 * CrudRepository: Save	
+	 */
+	@Test
+	public void testSave() {
+		// given 
+		Patient patient = createTestPatient();
+
+		// when
+		patientRepository.save(patient);
+
+		// then
+		assertNotNull(patient.getId());
+		assertTrue(patientRepository.existsById(patient.getId()));
+	}
+
+	private Patient createTestPatient() {
+		Patient patient = new Patient();
+		patient.setFirstName("Bob");
+		patient.setLastName("Sargent");
+		Calendar dob = Calendar.getInstance();
+		dob.add(Calendar.YEAR, -20);
+		patient.setDob(dob);
+		return patient;
 	}
 }
