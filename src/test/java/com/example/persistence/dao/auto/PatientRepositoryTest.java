@@ -2,6 +2,7 @@ package com.example.persistence.dao.auto;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -19,18 +20,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
 import org.springframework.data.domain.ExampleMatcher.StringMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.persistence.BaseTest;
 import com.example.persistence.model.Patient;
-import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // just for readability of logs (queries executed by test cases)
@@ -42,7 +44,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: count  
 	 */
-	@Test
+	//@Test
 	public void testCountByUsingQBE() {
 		// when
 		// create probe to be passed to Example
@@ -61,7 +63,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName or lastName
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameOrLastName() {
 		// when
 		// create probe to be passed to Example
@@ -83,7 +85,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName And lastName
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameAndLastName() {
 		// when
 		// create probe to be passed to Example
@@ -104,7 +106,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName And lastName with contains condition and ignorecase
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameAndLastNameIgnoreCase() {
 		// when
 		// create probe to be passed to Example
@@ -126,7 +128,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to create field specific matching condition.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameStartsWithAndLastNameEndsWithAndIgnoreCaseForLastName() {
 		// when
 		// create probe to be passed to Example
@@ -149,7 +151,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to ignore matching of specific fields.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameAndLastNameIgnoringIsDeleted() {
 		// when
 		// create probe to be passed to Example
@@ -171,7 +173,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher with PropertyValueTransformer, to transform property value before use in query.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameWithPropertyValueTransformer() {
 		// when
 		// create probe to be passed to Example
@@ -199,7 +201,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Uses QueryByExampleExecutor.exists() to check record exists by Example
 	 */
-	@Test
+	//@Test
 	public void testExistsUsingQBEByFirstName() {
 		// when
 		// create probe to be passed to Example
@@ -217,7 +219,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher find all by firstName and uses QueryByExampleExecutor.findAll(Example, Sort) version to sort records.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameStartsWitSortByFirstNameAscAndLastNameDesc() {
 		// when
 		// create probe to be passed to Example
@@ -235,7 +237,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: Save, existsById
 	 */
-	@Test
+	//@Test
 	public void testSave() {
 		// given 
 		Patient patient = createTestPatient();
@@ -251,7 +253,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: count -> Finds count of all entities in database for given entity type
 	 */
-	@Test
+	//@Test
 	public void testCount() {
 		// given
 		Patient patient = createTestPatient();
@@ -267,7 +269,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: delete
 	 */
-	@Test
+	//@Test
 	public void testDelete() {
 		// given
 		Patient patient = createTestPatient();
@@ -296,7 +298,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteAll
 	 */
-	@Test
+	//@Test
 	public void testDeleteAll() {
 		// given
 		Patient patient = createTestPatient();
@@ -318,7 +320,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteAll(Iterable<T> entities), findAllById(Iterable<T> ids)
 	 */
-	@Test
+	//@Test
 	public void testDeleteAllIterable() {
 		// given
 		Patient patient = createTestPatient();
@@ -337,7 +339,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteById(ID<T> id), findById(ID id)
 	 */
-	@Test
+	//@Test
 	public void testDeleteByIdWithEntityExistsById() {
 		// given
 		Patient patient = createTestPatient();
@@ -353,7 +355,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteById(ID<T> id), findById(ID id)
 	 */
-	@Test(expected = EmptyResultDataAccessException.class)
+	//@Test(expected = EmptyResultDataAccessException.class)
 	public void testDeleteByIdWithNotEntityExistsById() {
 		// given
 		Integer patientId = 12321;
@@ -365,7 +367,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: saveAll(iterable<T> entities)
 	 */
-	@Test
+	//@Test
 	public void testSaveAll() {
 		// given
 		Patient patient = createTestPatient();
@@ -383,6 +385,27 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientRepository.findAllById(Arrays.asList(patient.getId(), patient1.getId(), patient2.getId())),
 				hasSize(3));
 	}	
+	
+	/**
+	 * PagingAndSortingRepository: findAll(Pageable)
+	 */
+	@Test
+	public void testFindAllWithPagination() {
+		// given
+		int pageNumber = 0;
+		int pageSize = 5;
+		
+		// we can use same pageable object in our custom queries as well.
+		Pageable pageable = PageRequest.of(pageNumber, pageSize,
+				Sort.by(Order.asc("firstName").nullsLast(), Order.asc("lastName").nullsLast()));
+
+		// when
+		Page<Patient> page = null;
+		do {
+			page = patientRepository.findAll(pageable);
+			pageable = pageable.next();
+		} while (page.hasNext());
+	}
 	
 	private Patient createTestPatient() {
 		Patient patient = new Patient();

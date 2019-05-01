@@ -1,8 +1,8 @@
  package com.example.persistence.configuration;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +40,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackages = "com.example.persistence.dao") // we must set basePackages to scan
 public class AppPersistenceConfiguration {
 
-	@Resource
+	@Autowired
 	public Environment environment;
 
 	/**
