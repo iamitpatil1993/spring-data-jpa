@@ -1,11 +1,13 @@
 package com.example.persistence.dao.auto;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.hibernate.LazyInitializationException;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +36,7 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.persistence.BaseTest;
+import com.example.persistence.PatientService;
 import com.example.persistence.model.Patient;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,6 +45,9 @@ public class PatientRepositoryTest extends BaseTest {
 
 	@Autowired
 	private PatientRepository patientRepository;
+	
+	@Autowired
+	private PatientService patientService;
 	
 	/**
 	 * QueryByExampleExecutor: count  
@@ -408,6 +415,89 @@ public class PatientRepositoryTest extends BaseTest {
 		} while (page.hasNext());
 	}
 	
+	/**
+	 * JpaRepository: flush()
+	 */
+	@Test
+	public void testFlush() {
+		// when
+		patientRepository.flush(); // flushes/synchronizes any pending changes in current persistence context to
+									// database.
+		// Current here no persistence context, so not a single query will get executed
+		// here by flush operation.
+	}
+	
+	/**
+	 * JpaRepository: saveAndFlush()
+	 */
+	@Test
+	public void testSaveAndFlush() {
+		// given
+		Patient patient = createTestPatient();
+
+		// when
+		patientRepository.saveAndFlush(patient); // Saves passed object and then flushes/synchronizes any pending
+													// changes in current persistence context to database.
+		// it just calls CrudRepository.save() and then JpaRepository.flush()
+		assertNotNull(patient.getId());
+		assertTrue(patientRepository.existsById(patient.getId()));
+	}	
+
+	/**
+	 * JpaRepository: deleteAllInBatch -> Deletes all records in single batch (i.e
+	 * query) opposed to CrudRepository.deleteAll() which deletes records in
+	 * Iteration. So, this version is so much optimized and should be used over one
+	 * in CrudRepository.
+	 * 
+	 * NOTE: It only deletes the records in database, but does not detach the
+	 * entities from current persistence context
+	 */
+	@Test
+	public void testDeleteAllInBatch() {
+		// when
+		patientService.doSomethingInTransaction();
+	}	
+	
+	/**
+	 * JpaRepository: deleteInBatch -> Deletes records in single batch (i.e
+	 * query) opposed to CrudRepository.deleteAll() which deletes records in
+	 * Iteration. So, this version is so much optimized and should be used over one
+	 * in CrudRepository.
+	 * 
+	 * NOTE: It only deletes the records in database, but does not detach the
+	 * entities from current persistence context
+	 */
+	@Test
+	public void testDeleteInBatch() {
+		// given
+		Patient patient = createTestPatient();
+		Patient anotherPatient = createTestPatient();
+
+		// when
+		patientService.deletePatientsInBatch(Arrays.asList(patient, anotherPatient));
+
+		// then
+		assertThat(patientRepository.findAllById(Arrays.asList(patient.getId(), anotherPatient.getId())), empty());
+	}	
+	
+	/**
+	 * JpaRepository: getOne -> counterpart of EntityManager.getreference(), which
+	 * returns proxy with only primary key and does not executes any query to fetch
+	 * entity state from database. Entity state is fetched from database on first
+	 * access.
+	 */
+	@Test(expected = LazyInitializationException.class)
+	public void testGetOne() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		Patient proxyPatient = patientRepository.getOne(patient.getId()); // does not execute anything on database
+		assertThat(proxyPatient, is(instanceOf(Patient.class)));
+		assertNull(proxyPatient.getFirstName()); // this will fail due to LaziInitializationError, since here we do not have transaction and persistence unit here.
+	}
+
 	private Patient createTestPatient() {
 		Patient patient = new Patient();
 		patient.setFirstName("Bob");
