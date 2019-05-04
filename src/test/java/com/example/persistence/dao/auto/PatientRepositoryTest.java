@@ -3,6 +3,7 @@ package com.example.persistence.dao.auto;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,12 +12,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.PageAttributes;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
+import org.hamcrest.Matcher;
 import org.hibernate.LazyInitializationException;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -33,6 +40,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.stereotype.Repository;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.persistence.BaseTest;
@@ -498,6 +506,321 @@ public class PatientRepositoryTest extends BaseTest {
 		assertNull(proxyPatient.getFirstName()); // this will fail due to LaziInitializationError, since here we do not have transaction and persistence unit here.
 	}
 
+	/**
+	 * Query Methods:1 -> Finds patient only by ssn exact match
+	 */
+	@Test
+	public void testFindPatientBySsn() {
+		// given
+		String ssn = UUID.randomUUID().toString();
+
+		// when
+		Patient patient = patientRepository.findPatientBySsn(ssn);
+
+		// then
+		assertNull(patient);
+	}
+
+	/**
+	 * Query Methods:2 -> Finds patient only by ssn with ignoring case
+	 */
+	@Test
+	public void testReadAnyPatienttBySsnIgnoreCase() {
+		// given
+		String ssnSearchString = UUID.randomUUID().toString();
+
+		// when
+		Patient patient = patientRepository.readAnyPatienttBySsnIgnoreCase(ssnSearchString);
+
+		// then
+		assertNull(patient);
+	}
+
+	/**
+	 * Query Methods:3 -> Finds patient by firstName or lastName with exact match
+	 * 
+	 */
+	@Test
+	public void testGetByFirstNameOrLastName() {
+		// given
+		String firstName = UUID.randomUUID().toString();
+		String lastName = UUID.randomUUID().toString();
+
+		// when
+		Patient patient = patientRepository.getByFirstNameOrLastName(firstName, lastName);
+
+		// then
+		assertNull(patient);
+	}
+
+	/**
+	 * Query Methods:4 -> Finds patient by firstName And lastName with exact match
+	 * 
+	 */
+	@Test
+	public void testGetByFirstNameAndLastName() {
+		// given
+		Patient patient = createTestPatient();
+		String firstName = "dummy_first_name".concat(UUID.randomUUID().toString());
+		patient.setFirstName(firstName);
+		patientRepository.save(patient);
+
+		// when
+		Patient patientSearchResult = patientRepository.getByFirstNameAndLastName(patient.getFirstName(),
+				patient.getLastName());
+
+		// then
+		assertNotNull(patientSearchResult);
+		assertEquals(patient.getId(), patientSearchResult.getId());
+	}
+
+	/**
+	 * Query Methods:5 -> Finds patient by firstName And lastName with first name
+	 * ignoring case
+	 * 
+	 */
+	@Test
+	public void testGetByFirstNameIgnoreCaseAndLastName() {
+		// given
+		Patient patient = createTestPatient();
+		String firstName = "dummy_first_name".concat(UUID.randomUUID().toString());
+		patient.setFirstName(firstName);
+		patientRepository.save(patient);
+
+		// when
+		Patient patientSearchResult = patientRepository.getByFirstNameIgnoreCaseAndLastName(firstName.toUpperCase(),
+				patient.getLastName());
+
+		// then
+		assertNotNull(patientSearchResult);
+		assertEquals(patient.getId(), patientSearchResult.getId());
+	}
+
+	/**
+	 * Query Methods:6 -> Finds patient by firstName And lastName all conditions
+	 * ignoring case.
+	 * 
+	 */
+	@Test
+	public void testFindByFirstNameAndLastNameAllIgnoringCase() {
+		// given
+		Patient patient = createTestPatient();
+		String firstName = "dummy_first_name".concat(UUID.randomUUID().toString());
+		patient.setFirstName(firstName);
+
+		String lastName = "dummy_last_name".concat(UUID.randomUUID().toString());
+		patient.setLastName(lastName);
+		patientRepository.save(patient);
+
+		// when
+		Patient patientSearchResult = patientRepository
+				.findByFirstNameAndLastNameAllIgnoringCase(firstName.toUpperCase(), lastName.toLowerCase());
+
+		// then
+		assertNotNull(patientSearchResult);
+		assertEquals(patient.getId(), patientSearchResult.getId());
+	}
+
+	/**
+	 * Query Methods:7 -> Finds 'Distinct'patient by firstName
+	 */
+	@Test
+	public void testFindDistinctPatientByFirstName() {
+		// given
+		Patient patient = createTestPatient();
+		String firstName = "dummy_first_name".concat(UUID.randomUUID().toString());
+		patient.setFirstName(firstName);
+		patientRepository.save(patient);
+
+		// when
+		Patient patientSearchResult = patientRepository.findDistinctPatientByFirstName(firstName);
+
+		// then
+		assertNotNull(patientSearchResult);
+		assertEquals(patient.getId(), patientSearchResult.getId());
+	}
+
+	/**
+	 * Query Methods:8 -> Finds patients (possibly multple) by dob
+	 */
+	@Test
+	public void testFindByDob() {
+		// given
+		Patient patient = createTestPatient();
+		Calendar dob = Calendar.getInstance();
+		dob.add(Calendar.YEAR, -15);
+
+		patient.setDob(dob);
+		patientRepository.save(patient);
+
+		Patient anotherPatient = createTestPatient();
+		dob = Calendar.getInstance();
+		dob.add(Calendar.YEAR, -20);
+
+		anotherPatient.setDob(dob);
+		patientRepository.save(anotherPatient);
+
+		// when
+		List<Patient> patientSearchResults = patientRepository.findByDob(patient.getDob());
+
+		// then
+		assertNotNull(patientSearchResults);
+		assertThat(patientSearchResults.size(), is(greaterThan(0)));
+		List<Integer> patientSearchResultIds = patientSearchResults.stream().map(Patient::getId)
+				.collect(Collectors.toList());
+		assertThat(patientSearchResultIds, contains(patient.getId()));
+		assertThat(patientSearchResultIds, not(contains(anotherPatient.getId())));
+	}
+
+	/**
+	 * Query Methods:9 -> Finds patients (possibly multiple) by dob after
+	 */
+	@Test
+	public void testFindByDobIsAfter() {
+		// given
+		Patient patient = createTestPatient();
+		Calendar dob = Calendar.getInstance();
+		dob.add(Calendar.YEAR, -1);
+
+		patient.setDob(dob);
+		patientRepository.save(patient);
+
+		Patient anotherPatient = createTestPatient();
+		dob = Calendar.getInstance();
+		dob.add(Calendar.YEAR, -2);
+
+		anotherPatient.setDob(dob);
+		patientRepository.save(anotherPatient);
+
+		// when
+		Calendar criteriaDob = Calendar.getInstance();
+		criteriaDob.add(Calendar.YEAR, -3);
+		List<Patient> patientSearchResults = patientRepository.findByDobIsAfter(criteriaDob);
+
+		// then
+		assertNotNull(patientSearchResults);
+		assertThat(patientSearchResults.size(), is(greaterThanOrEqualTo(2)));
+		List<Integer> patientSearchResultIds = patientSearchResults.stream().map(Patient::getId)
+				.collect(Collectors.toList());
+		assertThat(patientSearchResultIds, contains(patient.getId(), anotherPatient.getId()));
+	}
+
+	/**
+	 * Query Methods:10 -> Finds patients (possibly multiple) by dob between two
+	 * dates
+	 */
+	@Test
+	public void testFindByDobIsBetween() {
+		// given
+		Patient patient = createTestPatient();
+		Calendar dob = Calendar.getInstance();
+		dob.set(2015, 7, 20);
+
+		patient.setDob(dob);
+		patientRepository.save(patient);
+
+		Patient anotherPatient = createTestPatient();
+		dob = Calendar.getInstance();
+		dob.set(2015, 7, 21);
+
+		anotherPatient.setDob(dob);
+		patientRepository.save(anotherPatient);
+
+		// when
+		Calendar equalToOrAfterDate = Calendar.getInstance();
+		equalToOrAfterDate.set(2015, 7, 20);
+
+		Calendar beforeOrEqualDate = Calendar.getInstance();
+		beforeOrEqualDate.set(2015, 7, 21);
+
+		List<Patient> patientSearchResults = patientRepository.findByDobIsBetween(equalToOrAfterDate,
+				beforeOrEqualDate);
+
+		// then
+		assertNotNull(patientSearchResults);
+		assertThat(patientSearchResults.size(), is(greaterThanOrEqualTo(2)));
+		List<Integer> patientSearchResultIds = patientSearchResults.stream().map(Patient::getId)
+				.collect(Collectors.toList());
+		assertThat(patientSearchResultIds, contains(patient.getId(), anotherPatient.getId()));
+	}
+
+	/**
+	 * Query Methods:11 -> Finds patients count with null ssn
+	 */
+	@Test
+	public void testCountBySsnIsNull() {
+		// given
+		Patient patientWithoutSsn = createTestPatient();
+		patientWithoutSsn.setSsn(null);
+		patientRepository.save(patientWithoutSsn);
+
+		// when
+		int patientsWithNullSsnCount = patientRepository.countBySsnIsNull();
+
+		// then
+		assertThat(patientsWithNullSsnCount, is(greaterThanOrEqualTo(1)));
+	}
+
+	/**
+	 * Query Methods:12 -> Finds patients by blood group in provided blood group
+	 * list
+	 */
+	@Test
+	public void testFindPatientsByBloodGroupIsIn() {
+		// given
+		List<String> requireBloodGroups = Arrays.asList("O-", "A-");
+		Patient patient = createTestPatient();
+		patient.setBloodGroup(requireBloodGroups.get(0));
+		patientRepository.save(patient);
+
+		Patient anotherPatient = createTestPatient();
+		anotherPatient.setBloodGroup(requireBloodGroups.get(1));
+		patientRepository.save(anotherPatient);
+
+		// when
+
+		List<Patient> patientsSearchResults = patientRepository.findPatientsByBloodGroupIsIn(requireBloodGroups);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+		assertThat(patientsSearchResults.size(), is(greaterThanOrEqualTo(2)));
+
+		List<Integer> patientsSearchResultsIds = patientsSearchResults.stream().map(Patient::getId)
+				.collect(Collectors.toList());
+		assertThat(patientsSearchResultsIds, hasItems(patient.getId(), anotherPatient.getId()));
+
+		Set<String> patientsSearchResultsBloodGroups = patientsSearchResults.stream().map(Patient::getBloodGroup)
+				.collect(Collectors.toSet());
+		assertThat(patientsSearchResultsBloodGroups.size(), is(equalTo(2)));
+	}
+
+	/**
+	 * Query Methods:13 -> Finds patients firstname or lastname starting with search
+	 * string
+	 */
+	@Test
+	public void testFindPatientsByFirstNameStartingWithOrLastNameStartingWithOrderByFirstNameAscLastNameAsc() {
+		Patient anotherPatient = createTestPatient();
+		anotherPatient.setFirstName("test_f_name");
+		patientRepository.save(anotherPatient);
+
+		Patient patient = createTestPatient();
+		patient.setFirstName("test_l_name");
+		patientRepository.save(patient);
+		String nameSearchString = "test_f";
+
+		// when
+		List<Patient> patientsSearchResults = patientRepository
+				.findPatientsByFirstNameStartingWithOrLastNameStartingWithOrderByFirstNameAscLastNameAsc(
+						nameSearchString, nameSearchString);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+		assertThat(patientsSearchResults.size(), is(greaterThanOrEqualTo(1)));
+		assertThat(patientsSearchResults.stream().map(Patient::getId).collect(Collectors.toList()),
+				contains(anotherPatient.getId()));
+	}
+
 	private Patient createTestPatient() {
 		Patient patient = new Patient();
 		patient.setFirstName("Bob");
@@ -505,6 +828,10 @@ public class PatientRepositoryTest extends BaseTest {
 		Calendar dob = Calendar.getInstance();
 		dob.add(Calendar.YEAR, -20);
 		patient.setDob(dob);
+		patient.setSsn(UUID.randomUUID().toString());
+
+		List<String> bloodGroups = Arrays.asList("O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+");
+		patient.setBloodGroup(bloodGroups.get(ThreadLocalRandom.current().nextInt(0, 8)));
 		return patient;
 	}
 }

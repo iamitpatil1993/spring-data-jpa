@@ -8,6 +8,8 @@ import java.util.Calendar;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * @author amit
@@ -31,8 +33,17 @@ public class Patient extends BaseEntity {
 
 	@Basic
 	@Column(name = "dob")
+	@Temporal(TemporalType.DATE)
 	private Calendar dob;
-
+	
+	@Basic
+	@Column(name = "ssn", unique = true, updatable = false)
+	private String ssn;
+	
+	@Basic
+	@Column(name = "blood_group")
+	private String bloodGroup;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -55,6 +66,22 @@ public class Patient extends BaseEntity {
 
 	public void setDob(Calendar dob) {
 		this.dob = dob;
+	}
+
+	public String getBloodGroup() {
+		return bloodGroup;
+	}
+
+	public void setBloodGroup(String bloodGroup) {
+		this.bloodGroup = bloodGroup;
+	}
+
+	public String getSsn() {
+		return ssn;
+	}
+
+	public void setSsn(String ssn) {
+		this.ssn = ssn;
 	}
 
 }
