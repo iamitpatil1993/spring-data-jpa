@@ -2,9 +2,15 @@ package com.example.persistence.dao.auto;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,10 +18,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.PageAttributes;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +27,6 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import org.hamcrest.Matcher;
 import org.hibernate.LazyInitializationException;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -40,12 +43,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.persistence.BaseTest;
 import com.example.persistence.PatientService;
+import com.example.persistence.dao.PatientVitalRepository;
 import com.example.persistence.model.Patient;
+import com.example.persistence.model.PatientVital;
+import com.example.persistence.model.VitalType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // just for readability of logs (queries executed by test cases)
@@ -53,6 +59,9 @@ public class PatientRepositoryTest extends BaseTest {
 
 	@Autowired
 	private PatientRepository patientRepository;
+	
+	@Autowired
+	private PatientVitalRepository patientVitalRepository;
 	
 	@Autowired
 	private PatientService patientService;
@@ -321,6 +330,7 @@ public class PatientRepositoryTest extends BaseTest {
 		patientRepository.save(patient);
 
 		// when
+		patientVitalRepository.deleteAll();
 		patientRepository.deleteAll(); // so much expensive, first it finds all entities, then it calls
 										// CrudRepository.delete() in loop for all.
 		// so it does not deletes all entities using sql/named query in order to sync data with
@@ -346,6 +356,7 @@ public class PatientRepositoryTest extends BaseTest {
 		patientRepository.save(anotherPatient);
 
 		// when
+		patientVitalRepository.deleteAll();
 		patientRepository.deleteAll(Arrays.asList(patient, anotherPatient)); // calls CrudRepository.delete(Entity) in iteration.
 
 		// then
@@ -819,6 +830,212 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientsSearchResults.size(), is(greaterThanOrEqualTo(1)));
 		assertThat(patientsSearchResults.stream().map(Patient::getId).collect(Collectors.toList()),
 				contains(anotherPatient.getId()));
+	}
+	
+	/**
+	 * Custom Query Methods:1 -> Finds all patients with null ssn string
+	 */
+	@Test
+	public void testFindPatientWithNullSsn() {
+		// when
+		List<Patient> patientsSearchResults = patientRepository.findPatientWithNullSsn();
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+	}
+
+	/**
+	 * Custom Query Methods:2 -> Finds all patients IDs with null ssn string
+	 */
+	@Test
+	public void testFindAllPatientIdsWithNullSsn() {
+		// when
+		List<Integer> patientsSearchResults = patientRepository.findAllPatientIdsWithNullSsn();
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+	}
+
+	/**
+	 * Custom Query Methods:3 -> Finds all patients with not a single vital reported
+	 * string
+	 */
+	@Test
+	public void testFindAllPatientsWithoutAnyVital() {
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		// when
+		List<Patient> patientsSearchResults = patientRepository.findAllPatientsWithoutAnyVital();
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+		assertThat(patientsSearchResults.size(), is(greaterThanOrEqualTo(1)));
+	}
+
+	/**
+	 * Custom Query Methods:4 -> Finds all patients vitals string
+	 */
+	@Test
+	public void testFindPatientVitals() {
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		PatientVital patientVital = new PatientVital();
+		patientVital.setPatient(patient);
+		patientVital.setValue(62d);
+		patientVital.setVital(VitalType.PULSE);
+
+		patientVitalRepository.save(patientVital);
+
+		// when
+		List<PatientVital> patientsSearchResults = patientRepository.findPatientVitals();
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+		assertThat(patientsSearchResults.size(), is(greaterThanOrEqualTo(1)));
+	}
+
+	/**
+	 * Custom Query Methods:5 -> Finds all patients where isDeleted = false (using
+	 * native query) string
+	 */
+	@Test
+	public void testFindAllPatientsWithIsDeletedFalse() {
+		// when
+		List<Patient> patientsSearchResults = patientRepository.findAllPatientsWithIsDeletedFalse();
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+	}
+
+	/**
+	 * Custom Query Methods:6 -> Finds all patients with firstName or lastName using
+	 * positional parameters string
+	 */
+	@Test
+	public void testFindAllWithFirstNameOrLastNameUsingPositionalParameters() {
+		// given
+		String firstName = UUID.randomUUID().toString();
+		String lastName = UUID.randomUUID().toString();
+
+		// when
+		Sort sortOrder = Sort.by(Order.asc("firstName"), Order.asc("lastName")); // we can specify only properties for
+		// sorting using Sort
+		List<Patient> patientsSearchResults = patientRepository
+				.findAllWithFirstNameOrLastNameUsingPositionalParameters(firstName, lastName, sortOrder);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+		assertThat(patientsSearchResults.size(), is(0));
+	}
+
+	/**
+	 * Custom Query Methods:7 -> Finds all patients with firstName or lastName using
+	 * named parameters, Sort by names string
+	 */
+	@Test
+	public void testFindAllWithFirstNameOrLastNameUsingNamedParameters() {
+		// given
+		String firstName = UUID.randomUUID().toString();
+		String lastName = UUID.randomUUID().toString();
+
+		// when
+		Sort sortOrder = Sort.by(Order.asc("firstName"), Order.asc("lastName")); // we can specify only properties for
+		// sorting using Sort
+		List<Patient> patientsSearchResults = patientRepository
+				.findAllWithFirstNameOrLastNameUsingNamedParameters(firstName, lastName, sortOrder);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+		assertThat(patientsSearchResults.size(), is(0));
+	}
+
+	/**
+	 * Custom Query Methods:8 -> Finds all patients with firstName or lastName using
+	 * named parameters, Sort by length of name string
+	 */
+	@Test
+	public void testFindAllWithFirstNameOrLastNameUsingNamedParametersWithSoryBylengthOfName() {
+		// given
+		String firstName = UUID.randomUUID().toString();
+		String lastName = UUID.randomUUID().toString();
+
+		// when
+		Sort sortOrder = JpaSort.unsafe("LENGTH(CONCAT(firstName, lastName))"); // we can use JpaSort.unsafe() to sorty
+		// by anything(not only entity
+		// properties)
+		List<Patient> patientsSearchResults = patientRepository
+				.findAllWithFirstNameOrLastNameUsingNamedParameters(firstName, lastName, sortOrder);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+		assertThat(patientsSearchResults.size(), is(0));
+	}
+
+	/**
+	 * Custom Query Methods:9 -> Finds all patients with pagination and sorting
+	 * string
+	 */
+	@Test
+	public void testFindAllPatients() {
+		// when
+		Sort sortOrder = Sort.by(Order.desc("updatedDate")); // pagination and sort both can not be passed to
+		Pageable pageable = PageRequest.of(0, 20, sortOrder);
+		List<Patient> patientsSearchResults = patientRepository.findAllPatients(pageable);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+	}
+
+	/**
+	 * Custom Query Methods:10 -> Finds all patients using native quey with
+	 * pagination and sorting string
+	 */
+	@Test
+	public void testFindAllPatientsUsingNativeQueryAndPagination() {
+		// when
+		Sort sortOrder = Sort.by(Order.desc("updated_date")); // pagination and sort both can not be passed to
+		Pageable pageable = PageRequest.of(1, 20, sortOrder);
+		Page<Patient> patientsSearchResults = patientRepository.findAllPatientsUsingNativeQueryAndPagination(pageable);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+	}
+
+	/**
+	 * Custom Query Methods:11 -> Finds all patients with given blood groups string
+	 */
+	@Test
+	public void testFindAllByBloodGroup() {
+		// when
+		List<String> bloodGroups = Arrays.asList("O-", "A-");
+		List<Patient> patientsSearchResults = patientRepository.findAllByBloodGroup(bloodGroups);
+
+		// then
+		assertThat(patientsSearchResults, notNullValue());
+	}
+
+	/**
+	 * Custom Query Methods:12 -> Update patient ssn by patientId string
+	 */
+	@Test
+	public void testUpdateSsnByPatientId() {
+		// given
+		Patient patientEntity = createTestPatient();
+		patientEntity.setSsn(null);
+		patientRepository.save(patientEntity);
+
+		// when
+		patientEntity.setSsn(UUID.randomUUID().toString());
+		int updatedRecordCount = patientService.updatePatientSsnByPatienId(patientEntity);
+
+		// then
+		assertThat(updatedRecordCount, is(1));
+		Optional<Patient> updatedPatient = patientRepository.findById(patientEntity.getId());
+
+		assertThat(updatedPatient.isPresent(), is(true));
+		assertEquals(updatedPatient.get().getSsn(), patientEntity.getSsn());
 	}
 
 	private Patient createTestPatient() {

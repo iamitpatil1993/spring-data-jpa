@@ -6,6 +6,7 @@ package com.example.persistence;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -55,6 +56,11 @@ public class PatientService {
 		patients.stream().forEach(patient -> {
 			assert entityManager.contains(patient); // entity is still managed	
 		});
+	}
+	
+	@Transactional
+	public int updatePatientSsnByPatienId(Patient patient) {
+		return patientRepository.updateSsnByPatientId(patient.getId(), patient.getSsn());
 	}
 	
 	private Patient createTestPatient() {

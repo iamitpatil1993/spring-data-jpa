@@ -4,10 +4,13 @@
 package com.example.persistence.model;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -37,12 +40,15 @@ public class Patient extends BaseEntity {
 	private Calendar dob;
 	
 	@Basic
-	@Column(name = "ssn", unique = true, updatable = false)
+	@Column(name = "ssn", unique = true)
 	private String ssn;
 	
 	@Basic
 	@Column(name = "blood_group")
 	private String bloodGroup;
+	
+	@OneToMany(mappedBy = "patient")
+	private Set<PatientVital> vitals = new HashSet<>();
 	
 	public String getFirstName() {
 		return firstName;
