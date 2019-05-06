@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 
@@ -24,7 +25,7 @@ import com.example.persistence.model.PatientVital;
  * @author amit
  *
  */
-public interface PatientRepository extends JpaRepository<Patient, Integer> {
+public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository { // extend custom repo. interface
 
 	// find, read and get are synonyms
 	public Patient findPatientBySsn(final String ssn); // find verb, Patient object

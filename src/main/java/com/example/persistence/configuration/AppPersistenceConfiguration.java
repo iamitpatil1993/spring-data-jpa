@@ -37,7 +37,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @PropertySource("classpath:jpa-properties.properties")
 // @EnableJpaRepositories expects transaction manager with name 'transactionManager' and EM Factory as 'entitymanagerFactory' as default.
 // if we have beans with different names, we can override these default using transactionManagerRef and entitymanagerFactoryRef
-@EnableJpaRepositories(basePackages = "com.example.persistence.dao") // we must set basePackages to scan
+@EnableJpaRepositories(basePackages = "com.example.persistence.dao") // we must set basePackages to scan, we can change default postfix ("Impl") using repositoryImplementationPostfix
 public class AppPersistenceConfiguration {
 
 	@Autowired

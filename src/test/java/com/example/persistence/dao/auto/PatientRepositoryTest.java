@@ -1038,6 +1038,27 @@ public class PatientRepositoryTest extends BaseTest {
 		assertEquals(updatedPatient.get().getSsn(), patientEntity.getSsn());
 	}
 
+	/**
+	 * Custom Repository:1 -> Custom repository method to get all Diabetic patients.
+	 */
+	@Test
+	public void testFindAllDiabeticPatients() {
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		PatientVital patientVital = new PatientVital();
+		patientVital.setPatient(patient);
+		patientVital.setVital(VitalType.SUGAR);
+		patientVital.setValue(300d);
+		patientVitalRepository.save(patientVital);
+		
+		// when
+		List<Patient> diabeticPatients = patientRepository.findAllDiabeticPatients();
+		
+		assertThat(diabeticPatients.size(), is(greaterThan(0)));
+		assertThat(diabeticPatients.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(patient.getId()));
+	}
+	
 	private Patient createTestPatient() {
 		Patient patient = new Patient();
 		patient.setFirstName("Bob");

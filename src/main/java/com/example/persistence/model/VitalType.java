@@ -8,5 +8,5 @@ package com.example.persistence.model;
  *
  */
 public enum VitalType {
-	HEIGHT, WEIGHT, SYS_BP, DI_BP, PULSE;
+	HEIGHT, WEIGHT, SYS_BP, DI_BP, PULSE, SUGAR;
 }
