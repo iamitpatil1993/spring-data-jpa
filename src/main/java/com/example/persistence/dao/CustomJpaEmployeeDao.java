@@ -5,12 +5,12 @@ package com.example.persistence.dao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.persistence.model.Employee;
 
@@ -31,7 +31,8 @@ public class CustomJpaEmployeeDao implements EmployeeRepository, InitializingBea
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomJpaEmployeeDao.class);
 
-	@PersistenceContext
+	// we need to specify which EntityManagerFactory to use.
+	@PersistenceContext(unitName = "foo-unit")
 	private EntityManager em;
 
 	@Override
@@ -39,7 +40,11 @@ public class CustomJpaEmployeeDao implements EmployeeRepository, InitializingBea
 		assert em != null : "EntityManager can not be null, and must be injected in order to CustomJpaEmployeeDao";
 	}
 
-	@Transactional
+	// since this is custom implementation class, we need to specify
+	// transactionManager to use, since there are two in application
+	// We do not need to specify this in case of repository classes because in case of repositories, spring 
+	// knows which entity manager to use via @EnableJpaRepositoties annotation attributes.
+	@Transactional(transactionManager = "transactionManager")
 	@Override
 	public Employee findById(Integer id) {
 		return em.find(Employee.class, id);
@@ -54,7 +59,7 @@ public class CustomJpaEmployeeDao implements EmployeeRepository, InitializingBea
 	 * just using repositories. And will use service classes and transaction in
 	 * further tutorials.
 	 */
-	@Transactional
+	@Transactional(transactionManager = "transactionManager") 
 	@Override
 	public Employee add(Employee employee) {
 		em.persist(employee);
@@ -62,7 +67,7 @@ public class CustomJpaEmployeeDao implements EmployeeRepository, InitializingBea
 		return employee;
 	}
 
-	@Transactional
+	@Transactional(transactionManager = "transactionManager")
 	@Override
 	public void delete(Integer id) {
 		Employee employee = findById(id);

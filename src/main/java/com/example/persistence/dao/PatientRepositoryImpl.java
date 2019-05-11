@@ -6,11 +6,11 @@ package com.example.persistence.dao;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,12 +29,10 @@ import com.example.persistence.model.VitalType;
 public class PatientRepositoryImpl implements CustomPatientRepository, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PatientRepositoryImpl.class);
+	
+	// we need to specify which EntitymanagerFactory to use.
+	@PersistenceContext(unitName = "foo-unit")
 	private EntityManager em;
-
-	@Autowired
-	public PatientRepositoryImpl(EntityManager em) {
-		this.em = em;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -42,7 +40,7 @@ public class PatientRepositoryImpl implements CustomPatientRepository, Initializ
 	 * @see
 	 * com.example.persistence.dao.CustomPatientRepository#findAllDiabeticPatients()
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, transactionManager = "transactionManager")
 	@Override
 	public List<Patient> findAllDiabeticPatients() {
 		String query = "SELECT p FROM Patient p WHERE p.id IN (SELECT pv.patient.id FROM PatientVital pv WHERE isDeleted = false AND vital = :vitalType AND value >= 150)";

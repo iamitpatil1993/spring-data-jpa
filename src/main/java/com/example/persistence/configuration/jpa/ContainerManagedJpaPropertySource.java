@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-@Profile(value = { "int", "prod" })
+@Qualifier("container-managed")
 public class ContainerManagedJpaPropertySource implements JpaPropertySource {
 
 	@Autowired

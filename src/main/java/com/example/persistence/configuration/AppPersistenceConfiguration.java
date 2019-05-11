@@ -3,6 +3,7 @@
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -51,8 +51,8 @@ public class AppPersistenceConfiguration {
 	 * @param entityManagerFactoryBean
 	 * @return
 	 */
-	@Bean(name = "transactionManager")
-	public PlatformTransactionManager jpaTransactionManager(AbstractEntityManagerFactoryBean entityManagerFactoryBean) {
+	@Bean(name = "transactionManager") // There are two LocalContainerEntityManagerFactoryBean in application context, so using qualifier.
+	public PlatformTransactionManager jpaTransactionManager(@Qualifier("entityManagerFactory") LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
 		jpaTransactionManager.setEntityManagerFactory(entityManagerFactoryBean.getObject());
 		return jpaTransactionManager;
@@ -73,9 +73,9 @@ public class AppPersistenceConfiguration {
 	 */
 	@Bean(name = "entityManagerFactory") // additional bean name to match default name expected by @EnableJpaRepository
 	@Profile("dev")
-	public LocalEntityManagerFactoryBean localEntityManagerFactoryBean(JpaPropertySource jpaPropertySource) {
+	public LocalEntityManagerFactoryBean localEntityManagerFactoryBean(@Qualifier("app-managed") JpaPropertySource jpaPropertySource) {
 		LocalEntityManagerFactoryBean entityManagerFactoryBean = new LocalEntityManagerFactoryBean();
-		entityManagerFactoryBean.setPersistenceUnitName(environment.getProperty("PERSISTENCE_UNIT_NAME"));
+		entityManagerFactoryBean.setPersistenceUnitName("foo-unit");
 
 		// We can set/override properties set in persistence.xml
 		entityManagerFactoryBean.setJpaPropertyMap(jpaPropertySource.getJpaPropertyMap());
@@ -95,7 +95,6 @@ public class AppPersistenceConfiguration {
 	}
 
 	@Bean
-	@Profile(value = { "int", "prod" })
 	public JpaVendorAdapter hibernateJpaVendorAdapter() {
 		HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
 		jpaVendorAdapter.setDatabase(Database.POSTGRESQL);
@@ -108,8 +107,8 @@ public class AppPersistenceConfiguration {
 
 	@Bean(name = "entityManagerFactory") // additional bean name to match default name expected by @EnableJpaRepository
 	@Profile(value = { "int", "prod" })
-	public LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean(DataSource dataSource,
-			JpaVendorAdapter adapter, JpaPropertySource jpaPropertySource) {
+	public LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean(@Qualifier("hikariCpDataSource") DataSource dataSource,
+			JpaVendorAdapter adapter, @Qualifier("container-managed") JpaPropertySource jpaPropertySource) {
 		LocalContainerEntityManagerFactoryBean containerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		containerEntityManagerFactoryBean.setDataSource(dataSource);
 		containerEntityManagerFactoryBean.setJpaVendorAdapter(adapter);

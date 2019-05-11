@@ -25,7 +25,7 @@ import com.example.persistence.model.PatientVital;
  * @author amit
  *
  */
-public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository { // extend custom repo. interface
+public interface PatientRepository extends CustomPatientRepository, JpaRepository<Patient, Integer> { // extend custom repo. interface
 
 	// find, read and get are synonyms
 	public Patient findPatientBySsn(final String ssn); // find verb, Patient object
