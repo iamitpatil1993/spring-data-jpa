@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.core.env.Environment;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -130,6 +132,11 @@ public class AppPersistenceConfiguration {
 		
 		// set jpa properties programmatically
 		containerEntityManagerFactoryBean.setJpaPropertyMap(jpaPropertySource.getJpaPropertyMap());
+		
+		// Enables asynchronous bootstrapping of JPA in separate thread. So, JPA bootstrapping and other application.
+		// So, JPA and other bootrapping will be in parallel in separate threads.
+		// refer https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#orm-jpa-setup-background
+		containerEntityManagerFactoryBean.setBootstrapExecutor(new SimpleAsyncTaskExecutor());  
 		return containerEntityManagerFactoryBean;
 	}
 	
