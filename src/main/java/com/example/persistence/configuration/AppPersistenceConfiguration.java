@@ -1,17 +1,20 @@
- package com.example.persistence.configuration;
-
+package com.example.persistence.configuration;  
+import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -24,6 +27,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.example.persistence.configuration.jpa.JpaPropertySource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * Configuration class defines configurations for DataSource and ORM.
@@ -48,6 +53,9 @@ public class AppPersistenceConfiguration {
 	 * adding additional bean name to match defaults. We can set/override default name using transactionManagerRef attribute 
 	 * of @EnableJpaRepositories annotation, but I don't want o hard code bean name, and want to chose one based on active profile.
 	 * 
+	 * NOTE: JpaTransaction manager supports JDBC repository to be part of JPA transaction as well.
+	 * Our service method can call repositories implemented in JPA and repositories implemeted in JDBC,
+	 * and all operations will share the transaction.
 	 * @param entityManagerFactoryBean
 	 * @return
 	 */
@@ -79,7 +87,6 @@ public class AppPersistenceConfiguration {
 
 		// We can set/override properties set in persistence.xml
 		entityManagerFactoryBean.setJpaPropertyMap(jpaPropertySource.getJpaPropertyMap());
-
 		return entityManagerFactoryBean;
 	}
 
@@ -163,5 +170,40 @@ public class AppPersistenceConfiguration {
 																	// @Repository. (which is default)
 
 		return postProcessor;
+	}
+	
+	/**
+	 * Will not work in case of dev profile, i.e LocalEntitymanagerFactoryBean. In
+	 * that case, it uses hibernate internal DataSource, which we can not get access
+	 * to {not easily though}.
+	 * 
+	 * @param dataSource DataSource to be used for JDBC it should be same as a one
+	 *                   used for JTa in order to share transaction
+	 * @return JdbcTemplate that we should use for Jdbc repositories in order to
+	 *         participate in same transaction created by JpaTransactionmanager
+	 */
+	@Bean
+	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+		return new JdbcTemplate(dataSource);
+	}
+	
+	/**
+	 * Executes liquibase application startup. This bean is spring's wrapper over
+	 * liquibase and we can do everything that liquibase provides using this spring
+	 * bean.
+	 * 
+	 * @param dataSource DataSource on which liquibase needs to be executed.
+	 * @return
+	 */
+	@Bean
+	@DependsOn(value = {"entityManagerFactory"})
+	public SpringLiquibase springLiquibase(final AbstractEntityManagerFactoryBean entityManagerFactoryBean) {
+		SpringLiquibase liquibase = new SpringLiquibase();
+		liquibase.setDataSource(entityManagerFactoryBean.getDataSource()); // provide dataSource on which to execute
+		liquibase.setChangeLog("classpath:db-schema/changelog/db.changelog-master.xml"); // provide top/master changelog
+		// file.
+		// there are lots of configurations we can set like context, rollback script
+		// etc.
+		return liquibase;
 	}
 }

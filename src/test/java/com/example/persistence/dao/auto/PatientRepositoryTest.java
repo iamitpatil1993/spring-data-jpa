@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -48,7 +49,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.persistence.BaseTest;
 import com.example.persistence.PatientService;
+import com.example.persistence.dao.EncounterRepository;
 import com.example.persistence.dao.PatientVitalRepository;
+import com.example.persistence.model.Encounter;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.VitalType;
@@ -65,6 +68,9 @@ public class PatientRepositoryTest extends BaseTest {
 	
 	@Autowired
 	private PatientService patientService;
+	
+	@Autowired
+	private EncounterRepository encounterRepository;
 	
 	/**
 	 * QueryByExampleExecutor: count  
@@ -1057,6 +1063,60 @@ public class PatientRepositoryTest extends BaseTest {
 		
 		assertThat(diabeticPatients.size(), is(greaterThan(0)));
 		assertThat(diabeticPatients.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(patient.getId()));
+	}
+	
+	@Test
+	public void testDoSomethingInTransactionWithSuccessfulOperation() {
+		// given
+		// create patient
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		Encounter encounter = createTestEncounter(patient);
+		
+		// when
+		// create encounter for new patient and update patiet details in single
+		// transaction. (JDBC and JPA shares same transaction, managed by
+		// JpaTransactionManager).
+		Encounter createdEncounter = patientService.doSomethingInTransaction(patient, encounter);
+		
+		// then
+		assertNotNull(createdEncounter);
+		assertNotNull(createdEncounter.getEncounterId());
+		assertNotNull(createdEncounter.getPatientId());
+		assertEquals(patient.getId(), createdEncounter.getPatientId());
+		assertTrue(patientRepository.existsById(patient.getId()));
+		assertTrue(encounterRepository.findById(createdEncounter.getEncounterId()).isPresent());
+	}
+	
+	@Test(expected = DataIntegrityViolationException.class)
+	public void testDoSomethingInTransactionWithUnSuccessfulOperation() {
+		// given
+		// create patient
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		// set large patient fname in order to fail patient update call, and fail
+		// transaction
+		for (int i = 0; i < 10; i++) {
+			patient.setFirstName(patient.getFirstName().concat(UUID.randomUUID().toString()));
+		}
+
+		// create encounter for patient and then update patient details (which will
+		// fail) and hence
+		// encounter creation will also fail and will rollback the transaction.
+		// Jpa method failure (update patient) causing jdbc repository operation (create
+		// Encounter)
+		// rollback the transaction. So, JDBC Repo and JPA Repo shares the transaction
+		// via JpaTransactionManager.
+		patientService.doSomethingInTransaction(patient, createTestEncounter(patient));
+	}
+
+	private Encounter createTestEncounter(Patient patient) {
+		Calendar now = Calendar.getInstance();
+		Encounter encounter = new Encounter();
+		encounter.setPatientId(patient.getId());
+		encounter.setCreatedTimestamp(now);
+		encounter.setUpdatedTimestap(now);
+		return encounter;
 	}
 	
 	private Patient createTestPatient() {

@@ -3,10 +3,8 @@
  */
 package com.example.persistence;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.example.persistence.dao.EncounterRepository;
 import com.example.persistence.dao.auto.PatientRepository;
+import com.example.persistence.model.Encounter;
 import com.example.persistence.model.Patient;
 
 /**
@@ -28,12 +28,14 @@ public class PatientService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PatientService.class);
 	private PatientRepository patientRepository = null;
+	private EncounterRepository encounterRepository = null;
 	
 	@PersistenceContext
 	private EntityManager entityManager; // Ideally EntityManager is not concern of service layer, but add just to validate tests/ 
 
-	public PatientService(PatientRepository patientRepository) {
+	public PatientService(PatientRepository patientRepository, EncounterRepository encounterRepository) {
 		this.patientRepository = patientRepository;
+		this.encounterRepository = encounterRepository;
 	}
 	
 	@Transactional
@@ -61,6 +63,18 @@ public class PatientService {
 	@Transactional
 	public int updatePatientSsnByPatienId(Patient patient) {
 		return patientRepository.updateSsnByPatientId(patient.getId(), patient.getSsn());
+	}
+	
+	@Transactional
+	public Encounter doSomethingInTransaction(final Patient patient, Encounter encounter) {
+		// create Encounter using JDBC repository
+		Encounter createdEncounter = encounterRepository.add(encounter);
+		
+		// create patient using JPA repository.
+		patient.setUpdatedDate(Calendar.getInstance());
+		patientRepository.save(patient);
+		
+		return createdEncounter;
 	}
 	
 	private Patient createTestPatient() {

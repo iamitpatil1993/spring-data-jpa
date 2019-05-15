@@ -38,6 +38,10 @@ public class PatientVital extends BaseEntity {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
+	
+	@Basic
+	@Column(name = "encounterId")
+	private String encounterId;
 
 	public VitalType getVital() {
 		return vital;
@@ -63,4 +67,11 @@ public class PatientVital extends BaseEntity {
 		this.patient = patient;
 	}
 
+	public String getEncounterId() {
+		return encounterId;
+	}
+
+	public void setEncounterId(String encounterId) {
+		this.encounterId = encounterId;
+	}
 }

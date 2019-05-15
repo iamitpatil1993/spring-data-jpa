@@ -22,6 +22,7 @@
 		<javax.validation.version>2.0.1.Final</javax.validation.version>
 		<datasource.hikaricp.version>3.3.1</datasource.hikaricp.version>
 		<datasource.postgres.version>42.2.5</datasource.postgres.version>
+		<liquibase.version>3.6.3</liquibase.version>
 		<java.version>1.8</java.version>
 	</properties>
 
@@ -174,6 +175,14 @@
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>6.0.16.Final</version>
+		</dependency>
+		
+			<!-- Database versioning/migration -->
+		<!-- Only dependency required for spring-liquibase integration -->
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>${liquibase.version}</version>
 		</dependency>
 
 	</dependencies>
