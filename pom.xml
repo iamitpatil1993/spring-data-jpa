@@ -16,8 +16,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.framework.version>5.1.4.RELEASE</spring.framework.version>
+		<spring.data.version>Lovelace-SR6</spring.data.version>
 		<junit.version>4.12</junit.version>
-		<hibernate-version>5.3.7.Final</hibernate-version>
+		<hibernate-version>5.4.1.Final</hibernate-version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
 		<javax.validation.version>2.0.1.Final</javax.validation.version>
 		<datasource.hikaricp.version>3.3.1</datasource.hikaricp.version>
@@ -25,12 +26,42 @@
 		<java.version>1.8</java.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<!-- BOM with all spring modules -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.framework.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+
+			<!-- BOM with all spring data modules -->
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-releasetrain</artifactId>
+				<version>${spring.data.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		
+			<!-- Hibernate BOM -->
+			<dependency>
+				<groupId>org.hibernate.ogm</groupId>
+				<artifactId>hibernate-ogm-bom</artifactId>
+				<version>5.4.1.Final</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<!-- Spring core -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring.framework.version}</version>
 			<exclusions>
 				<!-- Exclude Commons Logging in favor of SLF4j -->
 				<exclusion>
@@ -64,7 +95,6 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.mail</groupId>
@@ -97,7 +127,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${spring.framework.version}</version>
 			<scope>test</scope>
 		</dependency>
 	
@@ -116,7 +145,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>${spring.framework.version}</version>
 		</dependency>
 
 		<!-- Persistence -->
@@ -125,7 +153,6 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>${hibernate-version}</version>
 		</dependency>
 
 		<dependency>
@@ -140,13 +167,11 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
-			<version>2.1.6.RELEASE</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>${spring.framework.version}</version>
 		</dependency> 
 		
 
