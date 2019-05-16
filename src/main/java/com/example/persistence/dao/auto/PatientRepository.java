@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.model.Patient;
@@ -160,4 +161,10 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	@Modifying // Indicates a query method should be considered as modifying query
 	@Query(value = "UPDATE Patient p SET p.ssn = :ssn WHERE p.id = :patientId")
 	public int updateSsnByPatientId(@Param("patientId") final Integer patientId, @Param("ssn") final String ssn);
+	
+	@Transactional // since these methods performing DML, must be transactional
+	public void deleteById(final Integer patientId); // delete verb can be used to delete records
+	
+	@Transactional // since these methods performing DML, must be transactional
+	public void removePatientByBloodGroup(final String bloodGroup); // remove (synonym to delete)  verb can be used to delete records
 }

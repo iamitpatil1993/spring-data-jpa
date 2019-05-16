@@ -1059,6 +1059,41 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(diabeticPatients.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(patient.getId()));
 	}
 	
+	/**
+	 * Query Method: -> Delete by Id
+	 */
+	@Test
+	public void testDeleteById() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		// when
+		patientRepository.deleteById(patient.getId());
+
+		// then
+		assertThat(patientRepository.findById(patient.getId()).isPresent(), is(false));
+	}
+
+	/**
+	 * Query Method: -> Remove all patients by blood group
+	 */
+	@Test
+	public void testremovePatientByBloodGroup() {
+		String bloodGroup = "O-";
+		Patient patient = createTestPatient();
+		patient.setBloodGroup(bloodGroup);
+		patientRepository.save(patient);
+
+		// when
+		patientVitalRepository.deleteAllByPatientsWithBloodGroup(bloodGroup); // deleting for Foreign key contrain
+		// violation issue
+		patientRepository.removePatientByBloodGroup(bloodGroup);
+
+		// then
+		assertThat(patientRepository.findAllByBloodGroup(Arrays.asList(bloodGroup)), is(empty()));
+	}
+	
 	private Patient createTestPatient() {
 		Patient patient = new Patient();
 		patient.setFirstName("Bob");
