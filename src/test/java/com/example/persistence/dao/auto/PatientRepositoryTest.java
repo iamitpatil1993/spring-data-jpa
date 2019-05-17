@@ -47,11 +47,11 @@ import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.persistence.BaseTest;
-import com.example.persistence.PatientService;
 import com.example.persistence.dao.PatientVitalRepository;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.VitalType;
+import com.example.persistence.service.PatientService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // just for readability of logs (queries executed by test cases)
@@ -1089,7 +1089,7 @@ public class PatientRepositoryTest extends BaseTest {
 		patientVitalRepository.deleteAllByPatientsWithBloodGroup(bloodGroup); // deleting for Foreign key contrain
 		// violation issue
 		patientRepository.removePatientByBloodGroup(bloodGroup);
-
+		
 		// then
 		assertThat(patientRepository.findAllByBloodGroup(Arrays.asList(bloodGroup)), is(empty()));
 	}
