@@ -541,10 +541,11 @@ public class PatientRepositoryTest extends BaseTest {
 		String ssnSearchString = UUID.randomUUID().toString();
 
 		// when
-		Patient patient = patientRepository.readAnyPatienttBySsnIgnoreCase(ssnSearchString);
+		Optional<Patient> patient = patientRepository.readAnyPatienttBySsnIgnoreCase(ssnSearchString);
 
 		// then
-		assertNull(patient);
+		assertNotNull(patient);
+		assertFalse(patient.isPresent());
 	}
 
 	/**
@@ -558,10 +559,11 @@ public class PatientRepositoryTest extends BaseTest {
 		String lastName = UUID.randomUUID().toString();
 
 		// when
-		Patient patient = patientRepository.getByFirstNameOrLastName(firstName, lastName);
+		Optional<Patient> patient = patientRepository.getByFirstNameOrLastName(firstName, lastName);
 
 		// then
-		assertNull(patient);
+		assertNotNull(patient);
+		assertFalse(patient.isPresent());
 	}
 
 	/**
@@ -1092,6 +1094,76 @@ public class PatientRepositoryTest extends BaseTest {
 		
 		// then
 		assertThat(patientRepository.findAllByBloodGroup(Arrays.asList(bloodGroup)), is(empty()));
+	}
+	
+	/**
+	 * Null handling in spring - 1: Throws IllegalArgumentException if argument passed is null.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetBySsWithNullSsnPassed() {
+		// given
+		String ssn = null;
+		
+		// when
+		patientRepository.getBySsn(ssn);
+	}
+	
+	/**
+	 * Null handling in spring - 2: Throws EmptyResultDataAccessException if return value is null.
+	 */
+	@Test(expected = EmptyResultDataAccessException.class)
+	public void testGetBySsnWithNoRecordFoundBySsn() {
+		// given
+		String ssn = UUID.randomUUID().toString();
+		
+		// when
+		patientRepository.getBySsn(ssn);
+	}
+	
+	/**
+	 * Null handling in spring - 3: Allows null value to passed as a argument due to @Nullable.
+	 */
+	@Test
+	public void testReadBySsWithNullSsnPassed() {
+		// given
+		String ssn = null;
+		
+		// when
+		Patient patient = patientRepository.readBySsn(ssn);
+		
+		// then
+		assertNull(patient);
+	}
+	
+	/**
+	 * Null handling in spring - 4: Allows null value returned due to @Nullable.
+	 */
+	@Test
+	public void testReadBySsWithNoRecordFoundBySsn() {
+		// given
+		String ssn = UUID.randomUUID().toString();
+		
+		// when
+		Patient patient = patientRepository.readBySsn(ssn);
+		
+		// then
+		assertNull(patient);
+	}
+	
+	/**
+	 * Null handling in spring - 5: Using Optional to allow null no result avaiable case
+	 */
+	@Test
+	public void testFindBySsWithNoRecordFoundBySsn() {
+		// given
+		String ssn = UUID.randomUUID().toString();
+		
+		// when
+		Optional<Patient> patient = patientRepository.findBySsn(ssn);
+		
+		// then
+		assertNotNull(patient);
+		assertFalse(patient.isPresent());
 	}
 	
 	private Patient createTestPatient() {

@@ -5,6 +5,7 @@ package com.example.persistence.dao.auto;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.persistence.dao.CustomPatientRepository;
@@ -29,22 +31,25 @@ import com.example.persistence.model.PatientVital;
 public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository { // extend custom repo. interface
 
 	// find, read and get are synonyms
+	@Nullable
 	public Patient findPatientBySsn(final String ssn); // find verb, Patient object
 
-	public Patient readAnyPatienttBySsnIgnoreCase(final String ssnSearchString); // read verb, AnyPatient object (Object
+	@Nullable
+	public Optional<Patient> readAnyPatienttBySsnIgnoreCase(final String ssnSearchString); // read verb, AnyPatient object (Object
 																					// can be anything as you want)
-
-	public Patient getByFirstNameOrLastName(final String firstName, final String lastName); // get verb, No Object
+	@Nullable
+	public Optional<Patient> getByFirstNameOrLastName(final String firstName, final String lastName); // get verb, No Object
 																							// (object is not required,
 																							// unless Case of
 																							// 'Distinct)'
-
+	@Nullable
 	public Patient getByFirstNameAndLastName(final String firstName, final String lastName);
 
+	@Nullable
 	public Patient getByFirstNameIgnoreCaseAndLastName(final String firstName, final String lastName); // Ignore case
 																										// firstName
 																										// only
-
+	@Nullable
 	public Patient findByFirstNameAndLastNameAllIgnoringCase(final String firstName, final String lastName); // Ignore
 																												// case
 																												// for
@@ -54,7 +59,7 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 																												// this
 																												// is
 																												// findByFirstNameAndLastNameAllIgnoreCase
-
+	@Nullable
 	public Patient findDistinctPatientByFirstName(final String firstName);
 
 	public List<Patient> findByDob(final Calendar dob); // with date exact match
@@ -167,4 +172,28 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	
 	@Transactional // since these methods performing DML, must be transactional
 	public void removePatientByBloodGroup(final String bloodGroup); // remove (synonym to delete)  verb can be used to delete records
+
+	/**
+	 * Since NonNullAPi is applied at package level, by default arguemenets passed,
+	 * return values returned must not be null.
+	 * 
+	 * So, if null is passed here as a argument, by default Spring will throw IllegalArgumentException.
+	 * If method returns null, spring will throw exception.
+	 * 
+	 * If we want to change this default behavior which is applied to entire package due to @NonNullApi at package level,
+	 * we can add @Nullable annotation at method argument level which can be null.
+	 * 
+	 * If we want to allow null value to be returned from method, we can annoate the method with @Nullable.
+	 */
+	public Patient getBySsn(final String ssn);
+	
+	public @Nullable Patient readBySsn(@Nullable final String ssn);
+	
+	/**
+	 * No need of @Nullable here, it will return empty optional if no records found,
+	 * instead of throwing EmptyResultDataAccessException.
+	 * 
+	 * Spring handles Optional in result value present and absent cases as expected.
+	 */
+	public Optional<Patient> findBySsn(@Nullable final String ssn);
 }
