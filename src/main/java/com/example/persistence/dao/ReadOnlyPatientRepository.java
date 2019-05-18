@@ -5,9 +5,10 @@ package com.example.persistence.dao;
 
 import java.util.Optional;
 
-import org.springframework.data.repository.CrudRepository;
+
 
 import com.example.persistence.model.Patient;
+import org.springframework.data.repository.Repository;
 
 /**
  * This interface defines read-only patient repository, by limiting methods
@@ -21,7 +22,7 @@ import com.example.persistence.model.Patient;
  * @author amit
  *
  */
-public interface ReadOnlyPatientRepository extends CrudRepository<Patient, Integer> {
+public interface ReadOnlyPatientRepository extends Repository<Patient, Integer> {
 
 	/**
 	 * Retrieves an entity by its id.
