@@ -1166,6 +1166,28 @@ public class PatientRepositoryTest extends BaseTest {
 		assertFalse(patient.isPresent());
 	}
 	
+	/**
+	 * Query Method: -> Conditions on nested property (via associations)
+	 */
+	@Test
+	public void testFindDistinctPatientByVitalsVitalAndVitalsValueIsGreaterThan() {
+		// given
+		VitalType vitalType = VitalType.SUGAR;
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		PatientVital patientVital = new PatientVital();
+		patientVital.setPatient(patient);
+		patientVital.setVital(VitalType.SUGAR);
+		patientVital.setValue(320d);
+		patientVitalRepository.save(patientVital);
+		
+		// when
+		List<Patient> diabeticPatients = patientRepository.findDistinctPatientByVitalsVitalAndVitalsValueIsGreaterThan(vitalType, 300d);
+	
+		assertThat(diabeticPatients, is(not(empty())));
+	}
+	
 	private Patient createTestPatient() {
 		Patient patient = new Patient();
 		patient.setFirstName("Bob");

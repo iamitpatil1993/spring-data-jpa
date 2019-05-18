@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
+import com.example.persistence.model.VitalType;
 
 /**
  * Defines patient repository, which extends one of spring repository, in order
@@ -196,4 +197,17 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	 * Spring handles Optional in result value present and absent cases as expected.
 	 */
 	public Optional<Patient> findBySsn(@Nullable final String ssn);
+	
+	/**
+	 * Refers nested properties via associations. We can refer properties of associate entities as well.
+	 * We need to follow some convention to declare predicate conditions.
+	 * 
+	 * We can use underscore as well to manually define traversal points.
+	 * Refer docs https://docs.spring.io/spring-data/jpa/docs/2.1.8.RELEASE/reference/html/#repositories.query-methods.query-property-expressions
+	 * 
+	 * @param vitalType property from associated PatinetVital entity
+	 * @param value property from associated PatinetVital entity
+	 */
+	public List<Patient> findDistinctPatientByVitalsVitalAndVitalsValueIsGreaterThan(final VitalType vitalType, final Double value); 
+	//public List<Patient> findDistinctPatientByVitals_VitalAndVitals_ValueIsGreaterThan(final VitalType vitalType, final Double value); // same as above, only uses underscore  to manually define traversal points 
 }
