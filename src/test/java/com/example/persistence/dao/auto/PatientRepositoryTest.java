@@ -69,7 +69,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: count  
 	 */
-	@Test
+	//@Test
 	public void testCountByUsingQBE() {
 		// when
 		// create probe to be passed to Example
@@ -88,7 +88,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName or lastName
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameOrLastName() {
 		// when
 		// create probe to be passed to Example
@@ -110,7 +110,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName And lastName
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameAndLastName() {
 		// when
 		// create probe to be passed to Example
@@ -131,7 +131,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to match records by firstName And lastName with contains condition and ignorecase
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameAndLastNameIgnoreCase() {
 		// when
 		// create probe to be passed to Example
@@ -153,7 +153,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to create field specific matching condition.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameStartsWithAndLastNameEndsWithAndIgnoreCaseForLastName() {
 		// when
 		// create probe to be passed to Example
@@ -176,7 +176,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher to ignore matching of specific fields.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameAndLastNameIgnoringIsDeleted() {
 		// when
 		// create probe to be passed to Example
@@ -198,7 +198,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher with PropertyValueTransformer, to transform property value before use in query.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameWithPropertyValueTransformer() {
 		// when
 		// create probe to be passed to Example
@@ -226,7 +226,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Uses QueryByExampleExecutor.exists() to check record exists by Example
 	 */
-	@Test
+	//@Test
 	public void testExistsUsingQBEByFirstName() {
 		// when
 		// create probe to be passed to Example
@@ -244,7 +244,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * QueryByExampleExecutor: Creates ExampleMatcher find all by firstName and uses QueryByExampleExecutor.findAll(Example, Sort) version to sort records.
 	 */
-	@Test
+	//@Test
 	public void testFindAllUsingQBEByFirstNameStartsWitSortByFirstNameAscAndLastNameDesc() {
 		// when
 		// create probe to be passed to Example
@@ -262,7 +262,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: Save, existsById
 	 */
-	@Test
+	//@Test
 	public void testSave() {
 		// given 
 		Patient patient = createTestPatient();
@@ -278,7 +278,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: count -> Finds count of all entities in database for given entity type
 	 */
-	@Test
+	//@Test
 	public void testCount() {
 		// given
 		Patient patient = createTestPatient();
@@ -294,7 +294,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: delete
 	 */
-	@Test
+	//@Test
 	public void testDelete() {
 		// given
 		Patient patient = createTestPatient();
@@ -323,7 +323,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteAll
 	 */
-	@Test
+	//@Test
 	public void testDeleteAll() {
 		// given
 		Patient patient = createTestPatient();
@@ -346,7 +346,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteAll(Iterable<T> entities), findAllById(Iterable<T> ids)
 	 */
-	@Test
+	//@Test
 	public void testDeleteAllIterable() {
 		// given
 		Patient patient = createTestPatient();
@@ -366,7 +366,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteById(ID<T> id), findById(ID id)
 	 */
-	@Test
+	//@Test
 	public void testDeleteByIdWithEntityExistsById() {
 		// given
 		Patient patient = createTestPatient();
@@ -382,7 +382,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: deleteById(ID<T> id), findById(ID id)
 	 */
-	@Test(expected = EmptyResultDataAccessException.class)
+	//@Test(expected = EmptyResultDataAccessException.class)
 	public void testDeleteByIdWithNotEntityExistsById() {
 		// given
 		Integer patientId = 12321;
@@ -394,7 +394,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * CrudRepository: saveAll(iterable<T> entities)
 	 */
-	@Test
+	//@Test
 	public void testSaveAll() {
 		// given
 		Patient patient = createTestPatient();
@@ -416,7 +416,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * PagingAndSortingRepository: findAll(Pageable)
 	 */
-	@Test
+	//@Test
 	public void testFindAllWithPagination() {
 		// given
 		int pageNumber = 0;
@@ -437,7 +437,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * JpaRepository: flush()
 	 */
-	@Test
+	//@Test
 	public void testFlush() {
 		// when
 		patientRepository.flush(); // flushes/synchronizes any pending changes in current persistence context to
@@ -449,7 +449,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * JpaRepository: saveAndFlush()
 	 */
-	@Test
+	//@Test
 	public void testSaveAndFlush() {
 		// given
 		Patient patient = createTestPatient();
@@ -471,7 +471,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * NOTE: It only deletes the records in database, but does not detach the
 	 * entities from current persistence context
 	 */
-	@Test
+	//@Test
 	public void testDeleteAllInBatch() {
 		// when
 		patientService.doSomethingInTransaction();
@@ -486,7 +486,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * NOTE: It only deletes the records in database, but does not detach the
 	 * entities from current persistence context
 	 */
-	@Test
+	//@Test
 	public void testDeleteInBatch() {
 		// given
 		Patient patient = createTestPatient();
@@ -505,7 +505,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * entity state from database. Entity state is fetched from database on first
 	 * access.
 	 */
-	@Test(expected = LazyInitializationException.class)
+	//@Test(expected = LazyInitializationException.class)
 	public void testGetOne() {
 		// given
 		Patient patient = createTestPatient();
@@ -520,7 +520,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Methods:1 -> Finds patient only by ssn exact match
 	 */
-	@Test
+	//@Test
 	public void testFindPatientBySsn() {
 		// given
 		String ssn = UUID.randomUUID().toString();
@@ -535,7 +535,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Methods:2 -> Finds patient only by ssn with ignoring case
 	 */
-	@Test
+	//@Test
 	public void testReadAnyPatienttBySsnIgnoreCase() {
 		// given
 		String ssnSearchString = UUID.randomUUID().toString();
@@ -552,7 +552,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Query Methods:3 -> Finds patient by firstName or lastName with exact match
 	 * 
 	 */
-	@Test
+	//@Test
 	public void testGetByFirstNameOrLastName() {
 		// given
 		String firstName = UUID.randomUUID().toString();
@@ -570,7 +570,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Query Methods:4 -> Finds patient by firstName And lastName with exact match
 	 * 
 	 */
-	@Test
+	//@Test
 	public void testGetByFirstNameAndLastName() {
 		// given
 		Patient patient = createTestPatient();
@@ -592,7 +592,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * ignoring case
 	 * 
 	 */
-	@Test
+	//@Test
 	public void testGetByFirstNameIgnoreCaseAndLastName() {
 		// given
 		Patient patient = createTestPatient();
@@ -614,7 +614,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * ignoring case.
 	 * 
 	 */
-	@Test
+	//@Test
 	public void testFindByFirstNameAndLastNameAllIgnoringCase() {
 		// given
 		Patient patient = createTestPatient();
@@ -637,7 +637,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Methods:7 -> Finds 'Distinct'patient by firstName
 	 */
-	@Test
+	//@Test
 	public void testFindDistinctPatientByFirstName() {
 		// given
 		Patient patient = createTestPatient();
@@ -656,7 +656,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Methods:8 -> Finds patients (possibly multple) by dob
 	 */
-	@Test
+	//@Test
 	public void testFindByDob() {
 		// given
 		Patient patient = createTestPatient();
@@ -688,7 +688,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Methods:9 -> Finds patients (possibly multiple) by dob after
 	 */
-	@Test
+	//@Test
 	public void testFindByDobIsAfter() {
 		// given
 		Patient patient = createTestPatient();
@@ -722,7 +722,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Query Methods:10 -> Finds patients (possibly multiple) by dob between two
 	 * dates
 	 */
-	@Test
+	//@Test
 	public void testFindByDobIsBetween() {
 		// given
 		Patient patient = createTestPatient();
@@ -760,7 +760,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Methods:11 -> Finds patients count with null ssn
 	 */
-	@Test
+	//@Test
 	public void testCountBySsnIsNull() {
 		// given
 		Patient patientWithoutSsn = createTestPatient();
@@ -778,7 +778,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Query Methods:12 -> Finds patients by blood group in provided blood group
 	 * list
 	 */
-	@Test
+	//@Test
 	public void testFindPatientsByBloodGroupIsIn() {
 		// given
 		List<String> requireBloodGroups = Arrays.asList("O-", "A-");
@@ -811,7 +811,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Query Methods:13 -> Finds patients firstname or lastname starting with search
 	 * string
 	 */
-	@Test
+	//@Test
 	public void testFindPatientsByFirstNameStartingWithOrLastNameStartingWithOrderByFirstNameAscLastNameAsc() {
 		Patient anotherPatient = createTestPatient();
 		anotherPatient.setFirstName("test_f_name");
@@ -837,7 +837,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Custom Query Methods:1 -> Finds all patients with null ssn string
 	 */
-	@Test
+	//@Test
 	public void testFindPatientWithNullSsn() {
 		// when
 		List<Patient> patientsSearchResults = patientRepository.findPatientWithNullSsn();
@@ -849,7 +849,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Custom Query Methods:2 -> Finds all patients IDs with null ssn string
 	 */
-	@Test
+	//@Test
 	public void testFindAllPatientIdsWithNullSsn() {
 		// when
 		List<Integer> patientsSearchResults = patientRepository.findAllPatientIdsWithNullSsn();
@@ -862,7 +862,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Custom Query Methods:3 -> Finds all patients with not a single vital reported
 	 * string
 	 */
-	@Test
+	//@Test
 	public void testFindAllPatientsWithoutAnyVital() {
 		Patient patient = createTestPatient();
 		patientRepository.save(patient);
@@ -878,7 +878,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Custom Query Methods:4 -> Finds all patients vitals string
 	 */
-	@Test
+	//@Test
 	public void testFindPatientVitals() {
 		Patient patient = createTestPatient();
 		patientRepository.save(patient);
@@ -902,7 +902,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Custom Query Methods:5 -> Finds all patients where isDeleted = false (using
 	 * native query) string
 	 */
-	@Test
+	//@Test
 	public void testFindAllPatientsWithIsDeletedFalse() {
 		// when
 		List<Patient> patientsSearchResults = patientRepository.findAllPatientsWithIsDeletedFalse();
@@ -915,7 +915,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Custom Query Methods:6 -> Finds all patients with firstName or lastName using
 	 * positional parameters string
 	 */
-	@Test
+	//@Test
 	public void testFindAllWithFirstNameOrLastNameUsingPositionalParameters() {
 		// given
 		String firstName = UUID.randomUUID().toString();
@@ -936,7 +936,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Custom Query Methods:7 -> Finds all patients with firstName or lastName using
 	 * named parameters, Sort by names string
 	 */
-	@Test
+	//@Test
 	public void testFindAllWithFirstNameOrLastNameUsingNamedParameters() {
 		// given
 		String firstName = UUID.randomUUID().toString();
@@ -957,7 +957,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Custom Query Methods:8 -> Finds all patients with firstName or lastName using
 	 * named parameters, Sort by length of name string
 	 */
-	@Test
+	//@Test
 	public void testFindAllWithFirstNameOrLastNameUsingNamedParametersWithSoryBylengthOfName() {
 		// given
 		String firstName = UUID.randomUUID().toString();
@@ -979,7 +979,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Custom Query Methods:9 -> Finds all patients with pagination and sorting
 	 * string
 	 */
-	@Test
+	//@Test
 	public void testFindAllPatients() {
 		// when
 		Sort sortOrder = Sort.by(Order.desc("updatedDate")); // pagination and sort both can not be passed to
@@ -994,7 +994,7 @@ public class PatientRepositoryTest extends BaseTest {
 	 * Custom Query Methods:10 -> Finds all patients using native quey with
 	 * pagination and sorting string
 	 */
-	@Test
+	//@Test
 	public void testFindAllPatientsUsingNativeQueryAndPagination() {
 		// when
 		Sort sortOrder = Sort.by(Order.desc("updated_date")); // pagination and sort both can not be passed to
@@ -1008,7 +1008,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Custom Query Methods:11 -> Finds all patients with given blood groups string
 	 */
-	@Test
+	//@Test
 	public void testFindAllByBloodGroup() {
 		// when
 		List<String> bloodGroups = Arrays.asList("O-", "A-");
@@ -1021,7 +1021,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Custom Query Methods:12 -> Update patient ssn by patientId string
 	 */
-	@Test
+	//@Test
 	public void testUpdateSsnByPatientId() {
 		// given
 		Patient patientEntity = createTestPatient();
@@ -1043,7 +1043,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Custom Repository:1 -> Custom repository method to get all Diabetic patients.
 	 */
-	@Test
+	//@Test
 	public void testFindAllDiabeticPatients() {
 		Patient patient = createTestPatient();
 		patientRepository.save(patient);
@@ -1064,7 +1064,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Method: -> Delete by Id
 	 */
-	@Test
+	//@Test
 	public void testDeleteById() {
 		// given
 		Patient patient = createTestPatient();
@@ -1080,7 +1080,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Method: -> Remove all patients by blood group
 	 */
-	@Test
+	//@Test
 	public void testremovePatientByBloodGroup() {
 		String bloodGroup = "O-";
 		Patient patient = createTestPatient();
@@ -1099,7 +1099,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Null handling in spring - 1: Throws IllegalArgumentException if argument passed is null.
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	//@Test(expected = IllegalArgumentException.class)
 	public void testGetBySsWithNullSsnPassed() {
 		// given
 		String ssn = null;
@@ -1111,7 +1111,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Null handling in spring - 2: Throws EmptyResultDataAccessException if return value is null.
 	 */
-	@Test(expected = EmptyResultDataAccessException.class)
+	//@Test(expected = EmptyResultDataAccessException.class)
 	public void testGetBySsnWithNoRecordFoundBySsn() {
 		// given
 		String ssn = UUID.randomUUID().toString();
@@ -1123,7 +1123,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Null handling in spring - 3: Allows null value to passed as a argument due to @Nullable.
 	 */
-	@Test
+	//@Test
 	public void testReadBySsWithNullSsnPassed() {
 		// given
 		String ssn = null;
@@ -1138,7 +1138,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Null handling in spring - 4: Allows null value returned due to @Nullable.
 	 */
-	@Test
+	//@Test
 	public void testReadBySsWithNoRecordFoundBySsn() {
 		// given
 		String ssn = UUID.randomUUID().toString();
@@ -1153,7 +1153,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Null handling in spring - 5: Using Optional to allow null no result avaiable case
 	 */
-	@Test
+	//@Test
 	public void testFindBySsWithNoRecordFoundBySsn() {
 		// given
 		String ssn = UUID.randomUUID().toString();
@@ -1169,7 +1169,7 @@ public class PatientRepositoryTest extends BaseTest {
 	/**
 	 * Query Method: -> Conditions on nested property (via associations)
 	 */
-	@Test
+	//@Test
 	public void testFindDistinctPatientByVitalsVitalAndVitalsValueIsGreaterThan() {
 		// given
 		VitalType vitalType = VitalType.SUGAR;
@@ -1186,6 +1186,98 @@ public class PatientRepositoryTest extends BaseTest {
 		List<Patient> diabeticPatients = patientRepository.findDistinctPatientByVitalsVitalAndVitalsValueIsGreaterThan(vitalType, 300d);
 	
 		assertThat(diabeticPatients, is(not(empty())));
+	}
+	
+	
+	/**
+	 * Query Method: -> Find Top/first one record
+	 */
+	//@Test
+	public void testFindTopPatientByVitalsVitalAndVitalsValueIsGreaterThan() {
+		// given
+		VitalType vitalType = VitalType.SUGAR;
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		Patient anotherPatient = createTestPatient();
+		patientRepository.save(anotherPatient);
+
+		PatientVital patientVital = new PatientVital();
+		patientVital.setPatient(patient);
+		patientVital.setVital(VitalType.SUGAR);
+		patientVital.setValue(320d);
+		patientVitalRepository.save(patientVital);
+
+		patientVital.setId(null);
+		patientVital.setPatient(anotherPatient);
+		patientVital.setValue(400d);
+		patientVitalRepository.save(patientVital);
+
+		// when
+		List<Patient> diabeticPatients = patientRepository
+				.findTopPatientByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc(vitalType, 300d);
+
+		assertThat(diabeticPatients, is(not(empty())));
+		assertThat(diabeticPatients.size(), is(1));
+	}
+	
+	/**
+	 * Query Method: -> Find Top/first one record using Optional
+	 */
+	//@Test
+	public void testFindTopByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc() {
+		// given
+		VitalType vitalType = VitalType.SUGAR;
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		Patient anotherPatient = createTestPatient();
+		patientRepository.save(anotherPatient);
+
+		PatientVital patientVital = new PatientVital();
+		patientVital.setPatient(patient);
+		patientVital.setVital(VitalType.SUGAR);
+		patientVital.setValue(320d);
+		patientVitalRepository.save(patientVital);
+
+		patientVital.setId(null);
+		patientVital.setPatient(anotherPatient);
+		patientVital.setValue(400d);
+		patientVitalRepository.save(patientVital);
+
+		// when
+		Optional<Patient> diabeticPatient = patientRepository
+				.findTopByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc(vitalType, 300d);
+
+		assertThat(diabeticPatient, is(notNullValue()));
+		assertThat(diabeticPatient.isPresent(), is(true));
+	}
+	
+	/**
+	 * Query Method: -> Find Top/first one record using Optional
+	 */
+	@Test
+	public void testFindTop3ByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc() {
+		// given
+		VitalType vitalType = VitalType.SUGAR;
+		for (int i = 0; i < 10; i++) {
+			Patient patient = createTestPatient();
+			patientRepository.save(patient);
+
+			PatientVital patientVital = new PatientVital();
+			patientVital.setPatient(patient);
+			patientVital.setVital(VitalType.SUGAR);
+			patientVital.setValue(320d + (i * 2));
+			patientVitalRepository.save(patientVital);
+		}
+		
+		// when
+		Pageable pageable = PageRequest.of(0, 5);
+		Page<Patient> diabeticPatients = patientRepository
+				.findTop3ByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc(vitalType, 300d, pageable);
+
+		assertThat(diabeticPatients.getTotalElements(), is(3l));
+		assertThat(diabeticPatients.getContent().size(), is(3));
 	}
 	
 	private Patient createTestPatient() {

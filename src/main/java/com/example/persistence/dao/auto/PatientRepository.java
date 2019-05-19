@@ -210,4 +210,28 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	 */
 	public List<Patient> findDistinctPatientByVitalsVitalAndVitalsValueIsGreaterThan(final VitalType vitalType, final Double value); 
 	//public List<Patient> findDistinctPatientByVitals_VitalAndVitals_ValueIsGreaterThan(final VitalType vitalType, final Double value); // same as above, only uses underscore  to manually define traversal points 
+
+	/**
+	 * We can specify records to limit using 'top' or 'first' keyword before 'By'.
+	 * 
+	 * if we do not specify number, defaults to one
+	 * 
+	 * @param type
+	 * @param value
+	 * @return Only one record
+	 */
+	public List<Patient> findTopPatientByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc(
+			final VitalType type, final double value);
+	
+	// public List<Patient> findTop1PatientByVitalsVitalAndVitalsValueIsGreaterThanOrderBVitalsValueDesc(final VitalType type, final double value); // is same as above
+
+	public Optional<Patient> findTopByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc(final VitalType type,
+			final double value);
+
+	/**
+	 * We can get top/first n results from paginated result as well. In that case,
+	 * it will return top n records from within page.
+	 */
+	public Page<Patient> findTop3ByVitalsVitalAndVitalsValueIsGreaterThanOrderByVitalsValueDesc(final VitalType type,
+			final double value, Pageable pageable);
 }
