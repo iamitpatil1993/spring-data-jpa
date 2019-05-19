@@ -21,4 +21,5 @@ public interface CustomPatientRepository {
 	 * @return All diabetic patients
 	 */
 	public List<Patient> findAllDiabeticPatients();
+	
 }
