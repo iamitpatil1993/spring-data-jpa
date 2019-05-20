@@ -28,7 +28,7 @@ public class PatientServiceTest extends BaseTest {
 	/**
 	 * Test method for {@link com.example.persistence.service.PatientService#stressTestUsingPagination()}.
 	 */
-	//@Test
+	@Test
 	public void testStressTestUsingPagination() {
 		patientService.stressTestUsingPagination();
 	}
@@ -36,7 +36,7 @@ public class PatientServiceTest extends BaseTest {
 	/**
 	 * Test method for {@link com.example.persistence.service.PatientService#stressTestUsingStream()}.
 	 */
-	//@Test
+	@Test
 	public void testStressTestUsingStream() {
 		patientService.stressTestUsingStream();
 	}
