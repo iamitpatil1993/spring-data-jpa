@@ -3,6 +3,7 @@
  */
 package com.example.persistence.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Stream;
@@ -12,7 +13,8 @@ import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -34,6 +36,9 @@ public class PatientService {
 	
 	@PersistenceContext
 	private EntityManager entityManager; // Ideally EntityManager is not concern of service layer, but add just to validate tests/ 
+	
+	@Autowired
+	private TaskExecutor executor;
 
 	public PatientService(PatientRepository patientRepository) {
 		this.patientRepository = patientRepository;
@@ -94,6 +99,32 @@ public class PatientService {
 		} catch (Exception e) {
 			LOGGER.error("Error fetcing data", e);
 		}
+	}
+	
+	@Transactional
+	public void saveInBatch(List<Patient> patients) {
+		int batchSize = 100;
+		
+		List<Patient> currentBatch = new ArrayList<>(batchSize);
+		for (int i = 1; i <= patients.size(); i++) {
+			currentBatch.add(patients.get(i -1 ));
+			if (i % batchSize == 0) {
+				batchInsertAsync(currentBatch);
+				currentBatch = new ArrayList<>(batchSize); // creating new instance instead of cleare, due to concurrent modification issue.
+			}
+		}
+	}
+
+	/**
+	 * Even tough method is called privately and not via Proxy, it will still participate in active transaction,
+	 * since EntityManager is attached to thread local and EntityManagerFactoryUtils will provide EM attached to thread local
+	 */
+	private void batchInsertAsync(List<Patient> currentBatch) {
+		// executes code asynchronously and return immediately without waiting for code in Runnable completes
+		executor.execute(() -> {
+			patientRepository.saveAll(currentBatch);
+			entityManager.clear();
+		});
 	}
 
 	private void doSomethingWithData(Slice<Patient> slice) {

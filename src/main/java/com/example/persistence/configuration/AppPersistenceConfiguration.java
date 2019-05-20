@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -110,7 +112,7 @@ public class AppPersistenceConfiguration {
 	@Bean(name = "entityManagerFactory") // additional bean name to match default name expected by @EnableJpaRepository
 	@Profile(value = { "int", "prod" })
 	public LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean(DataSource dataSource,
-			JpaVendorAdapter adapter, JpaPropertySource jpaPropertySource) {
+			JpaVendorAdapter adapter, JpaPropertySource jpaPropertySource, AsyncTaskExecutor asyncTaskExecutor) {
 		LocalContainerEntityManagerFactoryBean containerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		containerEntityManagerFactoryBean.setDataSource(dataSource);
 		containerEntityManagerFactoryBean.setJpaVendorAdapter(adapter);
@@ -135,7 +137,7 @@ public class AppPersistenceConfiguration {
 		// Enables asynchronous bootstrapping of JPA in separate thread. So, JPA bootstrapping and other application.
 		// So, JPA and other bootrapping will be in parallel in separate threads.
 		// refer https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#orm-jpa-setup-background
-		containerEntityManagerFactoryBean.setBootstrapExecutor(new SimpleAsyncTaskExecutor());  
+		containerEntityManagerFactoryBean.setBootstrapExecutor(asyncTaskExecutor); // Using common Async TaskExecutor configured in app. context  
 		return containerEntityManagerFactoryBean;
 	}
 	
