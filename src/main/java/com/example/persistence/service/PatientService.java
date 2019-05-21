@@ -6,6 +6,8 @@ package com.example.persistence.service;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
@@ -18,8 +20,11 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import com.example.persistence.dao.auto.PatientRepository;
 import com.example.persistence.model.Patient;
@@ -129,11 +134,68 @@ public class PatientService {
 
 	private void doSomethingWithData(Slice<Patient> slice) {
 		try {
-			LOGGER.info("Processing records from page with Page Number :: {}", slice.getPageable().getPageNumber());
+			LOGGER.debug("Processing records from page with Page Number :: {}", slice.getPageable().getPageNumber());
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			LOGGER.error("Error while processing data", e);
 		}
+	}
+	
+	/**
+	 * We can run any method asynchronously
+	 * NOTE: return type of Async methods can be either of void, Future<>, ListenableFuture
+	 */
+	@Async
+	public void doSomethingAsynchronously(int sleepMiliSeconds) {
+		LOGGER.debug("Sleeping ...");
+		try {
+			Thread.sleep(sleepMiliSeconds);
+		} catch (InterruptedException e) {
+			LOGGER.error("Something went wrong while async processing", e);
+		}
+		LOGGER.debug("Woke up ...");
+	}
+	
+	/**
+	 * We can run any method asynchronously
+	 * NOTE: return type of Async methods can be either of void, Future<>
+	 * 
+	 * Returning Future to pass data to caller. Data must be wrapped inside Future.
+	 * We can not return data directly.
+	 */
+	@Async
+	public Future<String> doSomethingAsynchronouslyAndReturnData(int sleepMiliSeconds) {
+		CompletableFuture<String> future = new CompletableFuture<>();
+		LOGGER.debug("Sleeping ...");
+		try {
+			Thread.sleep(sleepMiliSeconds);
+		} catch (InterruptedException e) {
+			LOGGER.error("Something went wrong while async processing", e);
+		}
+		LOGGER.debug("Woke up ...");
+		future.complete("Completed Successfully");
+		return future;
+	}
+	
+	/**
+	 * We can return spring special interface and specialization on java.util.concurrent.Future.
+	 * ListenableFuture.
+	 * Unlike java Future, we can add callback handlers (Same as we do in vert.x) and appropriate callbacks
+	 * will get called on success/fail cases.
+	 * 
+	 * Unlike java Future (Future#get), Caller won't have to block to get data, we can define callback
+	 * and get data in callback and process it.)
+	 */
+	@Async
+	public ListenableFuture<String> doSomethingAsynchronouslyWithCallback(int sleepMiliSeconds) {
+		LOGGER.debug("Sleeping ...");
+		try {
+			Thread.sleep(sleepMiliSeconds);
+		} catch (InterruptedException e) {
+			LOGGER.error("Something went wrong while async processing", e);
+		}
+		LOGGER.debug("Woke up ...");
+		return new AsyncResult<String>("Completed Successfully");
 	}
 	
 	private Patient createTestPatient() {

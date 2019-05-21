@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @ComponentScan(basePackages = "com.example.persistence")
 @Import(value = { AppPersistenceConfiguration.class })
+@EnableAsync // this actually enables Async method execution, adding @Async is not sufficient.
 public class AppConfiguration {
 	// Nothing to do here for now.
 

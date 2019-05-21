@@ -16,7 +16,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.model.Patient;
@@ -238,4 +240,13 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 
 	@Query("SELECT p FROM Patient p")
 	public Stream<Patient> findAllViaStream(); // we can read data as a stream instead
+	
+	/**
+	 * Exactly similar to normal async methods, Query methods can be async and can return Future and ListenableFuture or void
+	 * @param pageable
+	 * @return ListenableFuture on which we can attach callback handler
+	 */
+	@Async
+	@Query(value = "SELECT p FROM Patient p")
+	ListenableFuture<List<Patient>> findAllPatientss(Pageable pageable); 
 }

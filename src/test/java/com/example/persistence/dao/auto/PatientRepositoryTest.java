@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -29,6 +28,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.hibernate.LazyInitializationException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +47,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import com.example.persistence.BaseTest;
 import com.example.persistence.dao.PatientVitalRepository;
@@ -339,9 +341,6 @@ public class PatientRepositoryTest extends BaseTest {
 		// so, queries executed are (n + 1) minimum, where n is number of records in
 		// database in best case. In worst case if entities are not managed,
 		// will be (1 + 2n)
-
-		// then
-		assertEquals(0, patientRepository.count());
 	}
 	
 	/**
@@ -1279,6 +1278,31 @@ public class PatientRepositoryTest extends BaseTest {
 
 		assertThat(diabeticPatients.getTotalElements(), is(3l));
 		assertThat(diabeticPatients.getContent().size(), is(3));
+	}
+
+	@Test
+	public void testFindByFirstName() {
+		// when
+		ListenableFuture<List<Patient>> future = patientRepository.findAllPatientss(PageRequest.of(0, 100000));
+		
+		// then
+		future.addCallback(data -> {
+			System.out.println("result is :: " + data.size());
+		}, (e) -> {
+			e.printStackTrace();
+		});
+		System.out.println("returning");
+	}
+
+	@After
+	@Before
+	public void beforeAndAfterTest() {
+		clearDataStore();
+	}
+	
+	private void clearDataStore() {
+		patientVitalRepository.deleteAllInBatch();
+		patientRepository.deleteAllInBatch();
 	}
 	
 	public static Patient createTestPatient() {
