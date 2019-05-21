@@ -1,10 +1,13 @@
 package com.example.persistence.configuration;
 
+import java.util.concurrent.Executor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -19,7 +22,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @ComponentScan(basePackages = "com.example.persistence")
 @Import(value = { AppPersistenceConfiguration.class })
 @EnableAsync // this actually enables Async method execution, adding @Async is not sufficient.
-public class AppConfiguration {
+public class AppConfiguration implements AsyncConfigurer {
 	// Nothing to do here for now.
 
 	/**
@@ -40,4 +43,19 @@ public class AppConfiguration {
 		// resources if tasks are running at application shutdown time.
 		return executor;
 	}
+	
+	/*
+	 * By default, spring uses SimpleAsyncTaskExecutor (which do not uses thread pool and creates new thread at each invocation).
+	 * To override that default TaskExecutor, we can override this method and specify TaskExecutor to be used.
+	 * 
+	 * This is how we can declare Executor to be used for all @Async uses in entire application.
+	 * If we provide executor here, we do not need to specify executor at @Async annotation usage.
+	 */
+	@Override
+	public Executor getAsyncExecutor() {
+		// ThreadPoolTaskExecutor uses configured thread pool and do not spawn at each invocation.
+		return threadPoolTaskExecutor();
+	}
+	
+	
 }

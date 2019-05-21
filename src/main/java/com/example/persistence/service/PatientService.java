@@ -145,7 +145,7 @@ public class PatientService {
 	 * We can run any method asynchronously
 	 * NOTE: return type of Async methods can be either of void, Future<>, ListenableFuture
 	 */
-	@Async
+	@Async(value = "threadPoolTaskExecutor") // no need to specify here if configured in config file.
 	public void doSomethingAsynchronously(int sleepMiliSeconds) {
 		LOGGER.debug("Sleeping ...");
 		try {
@@ -163,7 +163,7 @@ public class PatientService {
 	 * Returning Future to pass data to caller. Data must be wrapped inside Future.
 	 * We can not return data directly.
 	 */
-	@Async
+	@Async(value = "threadPoolTaskExecutor") // no need to specify here if configured in config file.
 	public Future<String> doSomethingAsynchronouslyAndReturnData(int sleepMiliSeconds) {
 		CompletableFuture<String> future = new CompletableFuture<>();
 		LOGGER.debug("Sleeping ...");
@@ -186,7 +186,7 @@ public class PatientService {
 	 * Unlike java Future (Future#get), Caller won't have to block to get data, we can define callback
 	 * and get data in callback and process it.)
 	 */
-	@Async
+	@Async(value = "threadPoolTaskExecutor") // no need to specify here if configured in config file.
 	public ListenableFuture<String> doSomethingAsynchronouslyWithCallback(int sleepMiliSeconds) {
 		LOGGER.debug("Sleeping ...");
 		try {

@@ -246,7 +246,7 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	 * @param pageable
 	 * @return ListenableFuture on which we can attach callback handler
 	 */
-	@Async
+	@Async(value = "threadPoolTaskExecutor")
 	@Query(value = "SELECT p FROM Patient p")
 	ListenableFuture<List<Patient>> findAllPatientss(Pageable pageable); 
 }
