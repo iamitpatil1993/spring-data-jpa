@@ -715,7 +715,8 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientSearchResults.size(), is(greaterThanOrEqualTo(2)));
 		List<Integer> patientSearchResultIds = patientSearchResults.stream().map(Patient::getId)
 				.collect(Collectors.toList());
-		assertThat(patientSearchResultIds, contains(patient.getId(), anotherPatient.getId()));
+		assertTrue(patientSearchResultIds.contains(patient.getId()));
+		assertTrue(patientSearchResultIds.contains(anotherPatient.getId()));
 	}
 
 	/**
@@ -754,7 +755,8 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientSearchResults.size(), is(greaterThanOrEqualTo(2)));
 		List<Integer> patientSearchResultIds = patientSearchResults.stream().map(Patient::getId)
 				.collect(Collectors.toList());
-		assertThat(patientSearchResultIds, contains(patient.getId(), anotherPatient.getId()));
+		assertTrue(patientSearchResultIds.contains(patient.getId()));
+		assertTrue(patientSearchResultIds.contains(anotherPatient.getId()));
 	}
 
 	/**
@@ -1292,6 +1294,12 @@ public class PatientRepositoryTest extends BaseTest {
 			e.printStackTrace();
 		});
 		System.out.println("returning");
+	}
+	
+	@Test
+	public void testDoSomething() {
+		// when
+		patientRepository.doSomething();
 	}
 
 	@After

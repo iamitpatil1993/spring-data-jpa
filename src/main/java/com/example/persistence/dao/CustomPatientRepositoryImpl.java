@@ -25,14 +25,15 @@ import com.example.persistence.model.VitalType;
  * @author amit
  *
  */
+// Name of this class can be CustomRepositoryInterfaceName + Impl. Spring will automatically add this to base PatientRepository.
 @Repository
-public class PatientRepositoryImpl implements CustomPatientRepository, InitializingBean {
+public class CustomPatientRepositoryImpl implements CustomPatientRepository, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PatientRepositoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CustomPatientRepositoryImpl.class);
 	private EntityManager em;
 
 	@Autowired
-	public PatientRepositoryImpl(EntityManager em) {
+	public CustomPatientRepositoryImpl(EntityManager em) {
 		this.em = em;
 	}
 
@@ -53,5 +54,4 @@ public class PatientRepositoryImpl implements CustomPatientRepository, Initializ
 	public void afterPropertiesSet() throws Exception {
 		assert em != null : "Entity manager required to be injected to use repository";
 	}
-
 }

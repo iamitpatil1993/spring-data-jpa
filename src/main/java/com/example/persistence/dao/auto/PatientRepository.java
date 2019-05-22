@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import com.example.persistence.dao.AnotherCustomPatientRepository;
 import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
@@ -32,7 +33,7 @@ import com.example.persistence.model.VitalType;
  * @author amit
  *
  */
-public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository { // extend custom repo. interface
+public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository, AnotherCustomPatientRepository { // extend custom repo. interface
 
 	// find, read and get are synonyms
 	@Nullable
