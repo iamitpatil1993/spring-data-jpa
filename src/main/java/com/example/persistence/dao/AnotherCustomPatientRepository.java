@@ -9,6 +9,8 @@ import com.example.persistence.model.Patient;
 
 /**
  * Another Custom Patient repository that will add to base spring data jpa PatientRepository.
+ * These custom patient repository implementations can be shared among any base repositories.
+ * 
  * @author amit
  *
  */

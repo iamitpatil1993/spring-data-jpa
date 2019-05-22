@@ -1301,6 +1301,12 @@ public class PatientRepositoryTest extends BaseTest {
 		// when
 		patientRepository.doSomething();
 	}
+	
+	@Test
+	public void testDoSomethingOnPatientVitalRepository() {
+		// when
+		patientVitalRepository.doSomething();
+	}
 
 	@After
 	@Before

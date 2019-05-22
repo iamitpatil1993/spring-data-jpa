@@ -15,7 +15,8 @@ import com.example.persistence.model.PatientVital;
  * @author amit
  *
  */
-public interface PatientVitalRepository extends JpaRepository<PatientVital, Integer> {
+// Custom Repository implementations can be share among different repositories
+public interface PatientVitalRepository extends JpaRepository<PatientVital, Integer>, AnotherCustomPatientRepository {
 
 	/**
 	 * We can not use implicit or explicit joins in bulk delete or update operations, HQL does not allows this,
