@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -25,6 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.example.persistence.configuration.jpa.JpaPropertySource;
+import com.example.persistence.dao.CustomJpaRepositoryBase;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -40,7 +39,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @PropertySource("classpath:jpa-properties.properties")
 // @EnableJpaRepositories expects transaction manager with name 'transactionManager' and EM Factory as 'entitymanagerFactory' as default.
 // if we have beans with different names, we can override these default using transactionManagerRef and entitymanagerFactoryRef
-@EnableJpaRepositories(basePackages = "com.example.persistence.dao") // we must set basePackages to scan, we can change default postfix ("Impl") using repositoryImplementationPostfix
+@EnableJpaRepositories(basePackages = "com.example.persistence.dao", repositoryBaseClass = CustomJpaRepositoryBase.class) // we must set basePackages to scan, we can change default postfix ("Impl") using repositoryImplementationPostfix
 public class AppPersistenceConfiguration {
 
 	@Autowired
