@@ -24,6 +24,7 @@
 		<datasource.hikaricp.version>3.3.1</datasource.hikaricp.version>
 		<datasource.postgres.version>42.2.5</datasource.postgres.version>
 		<java.version>1.8</java.version>
+		<querydsl-version>4.2.1</querydsl-version>
 	</properties>
 
 	<dependencyManagement>
@@ -174,7 +175,19 @@
 			<artifactId>spring-orm</artifactId>
 		</dependency> 
 		
-
+		<!-- QueryDsl integration with spring -->
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>${querydsl-version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>${querydsl-version}</version>
+		</dependency>
+			
 		<!-- DataSource Connection pool -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -213,6 +226,22 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
+			   <plugin>
+      <groupId>com.mysema.maven</groupId>
+      <artifactId>apt-maven-plugin</artifactId>
+      <version>1.1.3</version>
+      <executions>
+        <execution>
+          <goals>
+            <goal>process</goal>
+          </goals>
+          <configuration>
+            <outputDirectory>target/generated-sources/java</outputDirectory>
+            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
 		</plugins>
 	</build>
 </project>

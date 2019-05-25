@@ -1308,6 +1308,21 @@ public class PatientRepositoryTest extends BaseTest {
 		patientVitalRepository.doSomething();
 	}
 
+	@Test
+	public void testFindByPatientIdUsingQueryDsl() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		Optional<Patient> patientOptional = patientRepository.findByPatientIdUsingQueryDsl(patient.getId());
+		
+		// then
+		assertThat(patientOptional, is(notNullValue()));
+		assertThat(patientOptional.isPresent(), is(true));
+		assertThat(patientOptional.get().getId(), equalTo(patient.getId()));
+	}
+	
 	@After
 	@Before
 	public void beforeAndAfterTest() {

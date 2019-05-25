@@ -4,6 +4,7 @@
 package com.example.persistence.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.persistence.model.Patient;
 
@@ -21,5 +22,7 @@ public interface CustomPatientRepository {
 	 * @return All diabetic patients
 	 */
 	public List<Patient> findAllDiabeticPatients();
+	
+	public Optional<Patient> findByPatientIdUsingQueryDsl(final Integer patientId);
 	
 }
