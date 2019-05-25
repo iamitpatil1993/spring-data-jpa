@@ -54,6 +54,7 @@ import com.example.persistence.BaseTest;
 import com.example.persistence.dao.PatientVitalRepository;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
+import com.example.persistence.model.QPatient;
 import com.example.persistence.model.VitalType;
 import com.example.persistence.service.PatientService;
 
@@ -1363,6 +1364,28 @@ public class PatientRepositoryTest extends BaseTest {
 		// then
 		assertThat(dobOfYungestPatient, is(notNullValue()));
 		assertThat(dobOfYungestPatient.size(), is(2));
+	}
+	
+	/**
+	 * Query DSL with spring QuerydslPredicateExecutor. 
+	 */
+	@Test
+	public void testCountUsingQueryDsl() {
+		// given
+		String bloodGroup = "O+";
+		Patient patient = createTestPatient();
+		patient.setBloodGroup(bloodGroup);
+		patientRepository.save(patient);
+		
+		// when
+		// we just need to provide predicate and spring will manage other details.
+		// if we want more customized query, we can use QueryDsl native querying using custom repository implememntation.
+		long countOfPatientByBloodGroup = patientRepository.count(QPatient.patient.bloodGroup.eq(bloodGroup));
+		boolean isExistsByBloodGroup = patientRepository.exists(QPatient.patient.bloodGroup.eq(bloodGroup));
+		
+		// then
+		assertThat(countOfPatientByBloodGroup, is(greaterThanOrEqualTo(1l)));
+		assertThat(isExistsByBloodGroup, is(true));
 	}
 	
 	@After

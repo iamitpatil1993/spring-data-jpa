@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -33,7 +34,7 @@ import com.example.persistence.model.VitalType;
  * @author amit
  *
  */
-public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository, AnotherCustomPatientRepository { // extend custom repo. interface
+public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository, AnotherCustomPatientRepository, QuerydslPredicateExecutor<Patient> { // extend custom repo. interface
 
 	// find, read and get are synonyms
 	@Nullable
