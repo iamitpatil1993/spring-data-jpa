@@ -3,7 +3,9 @@
  */
 package com.example.persistence.dao;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.example.persistence.model.Patient;
@@ -24,5 +26,11 @@ public interface CustomPatientRepository {
 	public List<Patient> findAllDiabeticPatients();
 	
 	public Optional<Patient> findByPatientIdUsingQueryDsl(final Integer patientId);
+	
+	public List<Patient> getPatientsCreatedInLastMonth();
+	
+	public Optional<Calendar> findYungestPatient();
+	
+	public Map<String, Calendar> findYungestPatientGroupByBloodGroup();
 	
 }

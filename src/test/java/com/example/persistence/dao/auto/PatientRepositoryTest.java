@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -1321,6 +1322,47 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientOptional, is(notNullValue()));
 		assertThat(patientOptional.isPresent(), is(true));
 		assertThat(patientOptional.get().getId(), equalTo(patient.getId()));
+	}
+	
+	@Test
+	public void testGetPatientsCreatedInLastMonth() {
+		// when
+		List<Patient> patients = patientRepository.getPatientsCreatedInLastMonth();
+		
+		// then
+		assertThat(patients, is(notNullValue()));
+	}
+	
+	@Test
+	public void testFindYungestPatient() {
+		// when
+		Optional<Calendar> dobOfYungestPatient = patientRepository.findYungestPatient();
+		
+		// then
+		assertThat(dobOfYungestPatient, is(notNullValue()));
+	}
+	
+	@Test
+	public void testFindYungestPatientGroupByBloodGroup() {
+		// given
+		Patient patient = createTestPatient();
+		patient.setBloodGroup("O-");
+		patientRepository.save(patient);
+		
+		patient = createTestPatient();
+		patient.setBloodGroup("O-");
+		patientRepository.save(patient);
+		
+		patient = createTestPatient();
+		patient.setBloodGroup("O+");
+		patientRepository.save(patient);
+
+		// when
+		Map<String, Calendar> dobOfYungestPatient = patientRepository.findYungestPatientGroupByBloodGroup();
+
+		// then
+		assertThat(dobOfYungestPatient, is(notNullValue()));
+		assertThat(dobOfYungestPatient.size(), is(2));
 	}
 	
 	@After
