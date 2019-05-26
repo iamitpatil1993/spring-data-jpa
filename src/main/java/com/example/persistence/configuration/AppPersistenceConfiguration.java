@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -39,7 +40,9 @@ import com.zaxxer.hikari.HikariDataSource;
 @PropertySource("classpath:jpa-properties.properties")
 // @EnableJpaRepositories expects transaction manager with name 'transactionManager' and EM Factory as 'entitymanagerFactory' as default.
 // if we have beans with different names, we can override these default using transactionManagerRef and entitymanagerFactoryRef
-@EnableJpaRepositories(basePackages = "com.example.persistence.dao", repositoryBaseClass = CustomJpaRepositoryBase.class) // we must set basePackages to scan, we can change default postfix ("Impl") using repositoryImplementationPostfix
+// LAZY bootstrap mode, enables lazy initialization of repositories and repositories will be initialized on first time access. So, it improves application
+// startup time
+@EnableJpaRepositories(basePackages = "com.example.persistence.dao", repositoryBaseClass = CustomJpaRepositoryBase.class, bootstrapMode = BootstrapMode.LAZY) // we must set basePackages to scan, we can change default postfix ("Impl") using repositoryImplementationPostfix
 public class AppPersistenceConfiguration {
 
 	@Autowired
