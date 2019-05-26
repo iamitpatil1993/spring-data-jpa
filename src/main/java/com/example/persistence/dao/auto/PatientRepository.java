@@ -261,4 +261,12 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	 * @return
 	 */
 	List<Patient> findAllByBloodGroup(@Param("bloodGroup") final String bloodGroup);
+	
+	/**
+	 * This query definition will override query defined at Model {@link Patient}.
+	 * So, Query defined at Query method always overrides the matching Named query.
+	 * return Patients and PatientVital with isDeleted = true 
+	 */
+	@Query(value = "SELECT p FROM Patient p JOIN p.vitals v WHERE ((v.vital = 'SYS_BP' AND v.value > 140) OR (v.vital = 'DI_BP' AND v.value > 90))")
+	List<Patient> findAllHypertensionPatients();
 }

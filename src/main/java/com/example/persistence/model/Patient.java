@@ -21,7 +21,9 @@ import javax.persistence.TemporalType;
  *
  */
 @NamedQueries({
-	@NamedQuery(name = "Patient.findAllByBloodGroup", query = "SELECT p FROM Patient p WHERE isDeleted = false AND p.bloodGroup = :bloodGroup") })
+	@NamedQuery(name = "Patient.findAllByBloodGroup", query = "SELECT p FROM Patient p WHERE isDeleted = false AND p.bloodGroup = :bloodGroup"), 
+	@NamedQuery(name = "Patient.findAllHypertensionPatients", query = "SELECT p FROM Patient p JOIN p.vitals v WHERE p.isDeleted = false AND v.isDeleted = false AND ((v.vital = 'SYS_BP' AND v.value > 140) OR (v.vital = 'DI_BP' AND v.value > 90))")
+})
 @Entity
 public class Patient extends BaseEntity {
 

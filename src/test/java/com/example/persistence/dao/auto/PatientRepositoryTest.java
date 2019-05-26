@@ -1405,6 +1405,47 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientsWithBloodGroup.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(patient.getId()));
 	}
 	
+	/**
+	 * Query defined at Query method in repository overrides matching named query. In this case,
+	 * Named query 'Patient.findAllHypertensionPatients' matches to {@link PatientRepository#findAllHypertensionPatients()}.
+	 * But we have defined query at {@link PatientRepository#findAllHypertensionPatients()} with no isDeleted preficates in where clause.
+	 * Hence query method will also get isDeleted = true records, since it overrides query defined at Model {@link Patient}
+	 * 
+	 */
+	@Test
+	public void testFindAllHypertensionPatients() {
+		// given
+		Patient patient = createTestPatient();
+		patient.setDeleted(true); // IsDeleted true
+		patientRepository.save(patient);
+		
+		PatientVital patientVital = new PatientVital();
+		patientVital.setPatient(patient);
+		patientVital.setVital(VitalType.DI_BP);
+		patientVital.setValue(105d);
+		patientVitalRepository.save(patientVital);
+		
+		Patient anotherPatient = createTestPatient();
+		patientRepository.save(anotherPatient);
+		
+		PatientVital anotherPatientVital = new PatientVital();
+		anotherPatientVital.setPatient(anotherPatient);
+		anotherPatientVital.setVital(VitalType.DI_BP);
+		anotherPatientVital.setValue(105d);
+		anotherPatientVital.setDeleted(true); // isDeleted true
+		patientVitalRepository.save(anotherPatientVital);
+		
+		
+		// when
+		List<Patient> patientsWithHypertension = patientRepository.findAllHypertensionPatients();
+		
+		// then
+		assertThat(patientsWithHypertension, is(notNullValue()));
+		assertThat(patientsWithHypertension.size(), is(greaterThanOrEqualTo(2)));
+		assertThat(patientsWithHypertension.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(patient.getId()));
+		assertThat(patientsWithHypertension.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(anotherPatient.getId()));
+	}
+	
 	@After
 	@Before
 	public void beforeAndAfterTest() {
