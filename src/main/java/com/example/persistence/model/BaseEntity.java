@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Persistable;
 
 /**
  * Base entity for all entities to define common state in all entities.
@@ -21,8 +22,10 @@ import org.hibernate.annotations.UpdateTimestamp;
  *
  */
 
+// we can define strategy to detect whether entity is new by implementing Persistable interface.
+// spring will call isNew() method to check whether entity is new.
 @MappedSuperclass
-public class BaseEntity {
+public class BaseEntity implements Persistable<Integer> {
 
 	@Column(name = "id") // physical annotations should be first. (For readability)
 	@Basic
@@ -101,6 +104,17 @@ public class BaseEntity {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	/**
+	 * we can define any custom logic here, to determine whether entity is new.
+	 * Since, I am using IDENTITY stategy, I am just checking ID is null to conclude entity is new.
+	 * 
+	 * In case of assigned (id generation at application level) stategy, we may need to first perform select query.
+	 */
+	@Override
+	public boolean isNew() {
+		return this.id == null;
 	}
 
 }
