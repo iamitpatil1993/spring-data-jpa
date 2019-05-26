@@ -1458,6 +1458,35 @@ public class PatientRepositoryTest extends BaseTest {
 		 patientVitalRepository.findAllPatientVitals(Sort.by(Order.asc("patient.createdDate")));
 	}
 	
+	@Test
+	public void testGetCreatedDateById() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		Optional<Calendar> createdDate = patientRepository.getCreatedDateById(patient.getId());
+		
+		// then
+		assertNotNull(createdDate);
+		assertTrue(createdDate.isPresent());
+	}
+	
+	@Test
+	public void testIsExisById() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		boolean isExists = patientRepository.isExisById(patient.getId());
+		boolean isExists2 = patientRepository.isExisById(Long.valueOf(Math.round(Math.random() * 50000)).intValue());
+		
+		// then
+		assertTrue(isExists);
+		assertFalse(isExists2);
+	}
+	
 	@After
 	@Before
 	public void beforeAndAfterTest() {

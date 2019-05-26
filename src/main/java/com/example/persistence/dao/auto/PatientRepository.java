@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -22,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import com.example.persistence.dao.AnotherCustomPatientRepository;
+import com.example.persistence.dao.BaseEntityRepository;
 import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
@@ -34,7 +34,7 @@ import com.example.persistence.model.VitalType;
  * @author amit
  *
  */
-public interface PatientRepository extends JpaRepository<Patient, Integer>, CustomPatientRepository, AnotherCustomPatientRepository, QuerydslPredicateExecutor<Patient> { // extend custom repo. interface
+public interface PatientRepository extends BaseEntityRepository<Patient, Integer>, CustomPatientRepository, AnotherCustomPatientRepository, QuerydslPredicateExecutor<Patient> { // extend custom repo. interface
 
 	// find, read and get are synonyms
 	@Nullable
@@ -265,8 +265,14 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	/**
 	 * This query definition will override query defined at Model {@link Patient}.
 	 * So, Query defined at Query method always overrides the matching Named query.
+	 * 
+	 * We can use SpEL to define entity type in generic way, spring will determine entity type based on entity attached to this repository. Which is Patient.
+	 * Spring will substitute this SpEl with entity name before passing JPQL for execution.
+	 * 
+	 * This helps us to, change entity name without affecting query by using @Entity(name = "EntityName")
 	 * return Patients and PatientVital with isDeleted = true 
+	 * 
 	 */
-	@Query(value = "SELECT p FROM Patient p JOIN p.vitals v WHERE ((v.vital = 'SYS_BP' AND v.value > 140) OR (v.vital = 'DI_BP' AND v.value > 90))")
+	@Query(value = "SELECT p FROM #{#entityName} p JOIN p.vitals v WHERE ((v.vital = 'SYS_BP' AND v.value > 140) OR (v.vital = 'DI_BP' AND v.value > 90))")
 	List<Patient> findAllHypertensionPatients();
 }
