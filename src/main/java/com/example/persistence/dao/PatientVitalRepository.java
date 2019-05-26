@@ -3,7 +3,10 @@
  */
 package com.example.persistence.dao;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -32,4 +35,7 @@ public interface PatientVitalRepository extends JpaRepository<PatientVital, Inte
 	@Transactional // need to be transactional
 	@Query(value = "DELETE FROM PatientVital pv WHERE pv.patient IN (SELECT p FROM Patient p WHERE p.bloodGroup = :bloodGroup)")
 	public void deleteAllByPatientsWithBloodGroup(@Param("bloodGroup") final String bloodGroup);
+	
+	@Query(value = "SELECT pv FROM PatientVital pv")
+	public List<PatientVital> findAllPatientVitals(Sort sort);
 }

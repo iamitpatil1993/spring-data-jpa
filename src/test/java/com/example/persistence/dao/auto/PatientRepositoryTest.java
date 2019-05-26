@@ -1446,6 +1446,18 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientsWithHypertension.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(anotherPatient.getId()));
 	}
 	
+	/*
+	 * Sorting based on nested/associated entity's property
+	 * NOTE: We can not do this in case of Collection association and can only be done in case of single value association.
+	 * In case of collection association, we need to join related entity manually in JPQL
+	 * Refer : https://stackoverflow.com/questions/24750754/org-hibernate-queryexception-illegal-attempt-to-dereference-collection
+	 */
+	@Test
+	public void testFindAllPatientVitals() {
+		// when
+		 patientVitalRepository.findAllPatientVitals(Sort.by(Order.asc("patient.createdDate")));
+	}
+	
 	@After
 	@Before
 	public void beforeAndAfterTest() {
