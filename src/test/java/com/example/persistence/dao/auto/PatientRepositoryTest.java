@@ -1388,6 +1388,23 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(isExistsByBloodGroup, is(true));
 	}
 	
+	@Test
+	public void testFindAllByBloodGroupUsingNamedQueryAutoDetectionByNamingConvention() {
+		// given
+		String bloodGroup = "O-";
+		Patient patient = createTestPatient();
+		patient.setBloodGroup(bloodGroup);
+		patientRepository.save(patient);
+		
+		// when
+		List<Patient> patientsWithBloodGroup = patientRepository.findAllByBloodGroup(bloodGroup);
+		
+		// then
+		assertThat(patientsWithBloodGroup, is(notNullValue()));
+		assertThat(patientsWithBloodGroup.size(), is(greaterThanOrEqualTo(1)));
+		assertThat(patientsWithBloodGroup.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(patient.getId()));
+	}
+	
 	@After
 	@Before
 	public void beforeAndAfterTest() {

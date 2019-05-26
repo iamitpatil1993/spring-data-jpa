@@ -251,4 +251,14 @@ public interface PatientRepository extends JpaRepository<Patient, Integer>, Cust
 	@Async(value = "threadPoolTaskExecutor")
 	@Query(value = "SELECT p FROM Patient p")
 	ListenableFuture<List<Patient>> findAllPatientss(Pageable pageable); 
+
+	/**
+	 * Spring detects JPA named query based on name of method. Named query name should follow convenstion as 
+	 * Model.methodName
+	 * here model is Patient and method name is findAllByBloodGroup so it matches to named query 'Patient.findAllByBloodGroup'
+	 * refer https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.named-queries
+	 * @param bloodGroup 	
+	 * @return
+	 */
+	List<Patient> findAllByBloodGroup(@Param("bloodGroup") final String bloodGroup);
 }

@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -18,6 +20,8 @@ import javax.persistence.TemporalType;
  * @author amit
  *
  */
+@NamedQueries({
+	@NamedQuery(name = "Patient.findAllByBloodGroup", query = "SELECT p FROM Patient p WHERE isDeleted = false AND p.bloodGroup = :bloodGroup") })
 @Entity
 public class Patient extends BaseEntity {
 
@@ -38,18 +42,18 @@ public class Patient extends BaseEntity {
 	@Column(name = "dob")
 	@Temporal(TemporalType.DATE)
 	private Calendar dob;
-	
+
 	@Basic
 	@Column(name = "ssn", unique = true)
 	private String ssn;
-	
+
 	@Basic
 	@Column(name = "blood_group")
 	private String bloodGroup;
-	
+
 	@OneToMany(mappedBy = "patient")
 	private Set<PatientVital> vitals = new HashSet<>();
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
