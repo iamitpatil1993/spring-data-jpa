@@ -3,13 +3,17 @@
  */
 package com.example.persistence.service;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
@@ -126,5 +130,48 @@ public class PatientServiceTest extends BaseTest {
 		assertThat(stopWatch.getLastTaskTimeMillis(), is(lessThan(new Long(sleepMiliSeconds))));
 		assertThat(future.isDone(), is(false));
 	}
+	
+	/**
+	 * Update without flush persistence context before query execution
+	 */
+	@Test
+	public void testUpdatePatientNameWithFushDisabled() {
+		// given
+		String firstName = UUID.randomUUID().toString();
+		String lastName = UUID.randomUUID().toString();
+		Patient patient = PatientRepositoryTest.createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		patientService.updatePatientName(firstName, lastName, patient.getId());
+		
+		// then
+		Optional<Patient> patientoptional = patientRepository.findById(patient.getId());
+		assertThat(patientoptional.isPresent(), is(true));
+		assertThat(patientoptional.get().getFirstName(), is(not(equalTo(firstName)))); // NOT EQUAL
+		assertThat(patientoptional.get().getLastName(), is(not(equalTo(lastName)))); // NOT EQUAL 
+	}
+	
+	/**
+	 * Update with flush persistence context before query execution
+	 */
+	@Test
+	public void testUpdatePatientNameWithFushEnabled() {
+		// given
+		String firstName = UUID.randomUUID().toString();
+		String lastName = UUID.randomUUID().toString();
+		Patient patient = PatientRepositoryTest.createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		patientService.updatePatientNameWithFlushBeforeQueryExection(firstName, lastName, patient.getId());
+		
+		// then
+		Optional<Patient> patientoptional = patientRepository.findById(patient.getId());
+		assertThat(patientoptional.isPresent(), is(true));
+		assertThat(patientoptional.get().getFirstName(), is(equalTo(firstName))); //  EQUAL
+		assertThat(patientoptional.get().getLastName(), is(equalTo(lastName))); //  EQUAL 
+	}
+
 
 }

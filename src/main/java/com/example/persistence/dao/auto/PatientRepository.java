@@ -8,11 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.persistence.QueryHint;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
@@ -275,4 +278,14 @@ public interface PatientRepository extends BaseEntityRepository<Patient, Integer
 	 */
 	@Query(value = "SELECT p FROM #{#entityName} p JOIN p.vitals v WHERE ((v.vital = 'SYS_BP' AND v.value > 140) OR (v.vital = 'DI_BP' AND v.value > 90))")
 	List<Patient> findAllHypertensionPatients();
+	
+	@QueryHints(value = {@QueryHint(name = "org.hibernate.flushMode", value = "COMMIT")})
+	@Modifying(flushAutomatically = false) 
+	@Query(value = "UPDATE Patient p SET p.firstName = ?1, p.lastName = ?2 WHERE p.id = ?3")
+	public int updateNameWithoutFlushingExistinChanges(final String fName, final String lName, final Integer id);
+	
+	@QueryHints(value = {@QueryHint(name = "org.hibernate.flushMode", value = "COMMIT")})
+	@Modifying(flushAutomatically = true) 
+	@Query(value = "UPDATE Patient p SET p.firstName = ?1, p.lastName = ?2 WHERE p.id = ?3")
+	public int updateNameWithFlushingExistinChanges(final String fName, final String lName, final Integer id);
 }

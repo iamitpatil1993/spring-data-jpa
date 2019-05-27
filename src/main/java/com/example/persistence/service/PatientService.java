@@ -6,6 +6,8 @@ package com.example.persistence.service;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -197,6 +199,53 @@ public class PatientService {
 		LOGGER.debug("Woke up ...");
 		return new AsyncResult<String>("Completed Successfully");
 	}
+	
+	@Transactional
+	public void updatePatientName(final String firstName, final String lastName, final Integer id) {
+		Optional<Patient> patientOptional = patientRepository.findById(id);
+		if (!patientOptional.isPresent()) {
+			throw new RuntimeException("No record found by Id");
+		}
+		Patient patient = patientOptional.get();
+		patient.setFirstName(firstName.concat(UUID.randomUUID().toString()));
+		patient.setLastName(lastName.concat(UUID.randomUUID().toString()));
+
+		// since we disabled flushing before query execution using
+		// @Modifying(flushAutomatically = false), spring
+		// will NOT flush persistence context before executing query.
+		// Also note, we have set query hint to indicate persistence provider to not to
+		// flush persistence context,
+		// before query execution and should flush at the time of commit.
+		// So, neither spring nor JPA persistence provider will flush
+		// Persistence context before executing query. Hence name updated in below
+		// update query will be overridden by changes in persistence context, after
+		// flush operation performed by
+		// hibernate at commit Time
+
+		patientRepository.updateNameWithoutFlushingExistinChanges(firstName, lastName, id);
+	}
+	
+	@Transactional
+	public void updatePatientNameWithFlushBeforeQueryExection(final String firstName, final String lastName,
+			final Integer id) {
+		Optional<Patient> patientOptional = patientRepository.findById(id);
+		if (!patientOptional.isPresent()) {
+			throw new RuntimeException("No record found by Id");
+		}
+		Patient patient = patientOptional.get();
+		patient.setFirstName(firstName.concat(UUID.randomUUID().toString()));
+		patient.setLastName(lastName.concat(UUID.randomUUID().toString()));
+
+		// since we enabled flushing before query execution using
+		// @Modifying(flushAutomatically = true), spring
+		// will flush persistence context before executing query.
+		// Also note, we have set query hint to indicate persistence provider to not to
+		// flush persistence context,
+		// before query execution and should flush at the time of commit. So, spring is
+		// flushing persistence context
+		// before update query.
+		patientRepository.updateNameWithFlushingExistinChanges(firstName, lastName, id);
+	}	
 	
 	private Patient createTestPatient() {
 		Patient patient = new Patient();
