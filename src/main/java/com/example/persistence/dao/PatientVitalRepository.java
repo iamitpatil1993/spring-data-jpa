@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +25,7 @@ import com.example.persistence.model.PatientVital;
 @Lazy(value = true) // Individual repository can also be marked to get initialized lazily, if we do
 					// not want to enable lazy initialization for all repositories at configuration
 					// level..
-public interface PatientVitalRepository extends JpaRepository<PatientVital, Integer>, AnotherCustomPatientRepository {
+public interface PatientVitalRepository extends JpaRepository<PatientVital, Integer>, AnotherCustomPatientRepository, CustomPatientVitalRepository {
 
 	/**
 	 * We can not use implicit or explicit joins in bulk delete or update operations, HQL does not allows this,
@@ -38,4 +40,7 @@ public interface PatientVitalRepository extends JpaRepository<PatientVital, Inte
 	
 	@Query(value = "SELECT pv FROM PatientVital pv")
 	public List<PatientVital> findAllPatientVitals(Sort sort);
+	
+	@EntityGraph(value = "PatientVital.graph1", type = EntityGraphType.FETCH)
+	public List<PatientVital> getPatientVitalByIsDeleted(boolean isDeleted);
 }

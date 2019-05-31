@@ -8,10 +8,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.Table;
 
 /**
@@ -22,6 +27,13 @@ import javax.persistence.Table;
 @NamedQueries(value = {
 		@NamedQuery(query = "SELECT pv FROM PatientVital pv", name = "PatientVital.findAll")
 })
+@NamedEntityGraphs(value = { @NamedEntityGraph(name = "PatientVital.graph1", attributeNodes = {
+		@NamedAttributeNode(value = "vital"), @NamedAttributeNode(value = "value"),
+		@NamedAttributeNode(value = "patient", subgraph = "patientSubGraph") }, subgraphs = {
+				@NamedSubgraph(name = "patientSubGraph", attributeNodes = { @NamedAttributeNode(value = "id"),
+						@NamedAttributeNode(value = "firstName"), @NamedAttributeNode(value = "lastName") }) }) }
+
+)
 @Entity
 @Table(name = "patient_vital")
 public class PatientVital extends BaseEntity {
@@ -35,7 +47,7 @@ public class PatientVital extends BaseEntity {
 	@Column(name = "value", nullable = false, precision = 2)
 	private Double value;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
