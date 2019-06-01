@@ -8,7 +8,6 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Optional;
 
-import org.hibernate.LazyInitializationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 	/**
 	 * Object graph will load patient entity (in single value association) despite it is marked to be loaded lazily
 	 */
-	@Test
+	//@Test
 	public void testFindByIdWithPatient() {
 		// given
 		Patient patient = PatientRepositoryTest.createTestPatient();
@@ -59,7 +58,7 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 	 * lazy, patinet will not be fetched in default entity fetch graph used by
 	 * spring generated repo. impl.
 	 */
-	@Test(expected = LazyInitializationException.class)
+	//@Test(expected = LazyInitializationException.class)
 	public void testFindByIdWithoutPatient() {
 		// given
 		Patient patient = PatientRepositoryTest.createTestPatient();
@@ -69,6 +68,40 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 
 		// when
 		Optional<PatientVital> patientVitalOptional = patientVitalRepository.findById(patientVital.getId());
+
+		// then
+		assertThat(patientVitalOptional.isPresent(), is(true));
+		assertThat(patientVitalOptional.get().getPatient(), is(nullValue()));
+	}
+	
+	@Test
+	public void testFindByIdWithPatientUsingJPQL() {
+		// given
+		Patient patient = PatientRepositoryTest.createTestPatient();
+		patientRepository.save(patient);
+		PatientVital patientVital = createTestPatientVial(patient);
+		patientVitalRepository.save(patientVital);
+
+		// when
+		Optional<PatientVital> patientVitalOptional = patientVitalRepository.findByIdWithPatientUsingJPQL(patientVital.getId());
+
+		// then
+		assertThat(patientVitalOptional.isPresent(), is(true));
+		assertThat(patientVitalOptional.get().getPatient(), is(notNullValue()));
+		assertThat(patientVitalOptional.get().getPatient().getId(), is(equalTo(patient.getId())));
+	}
+	
+	//@Test(expected = LazyInitializationException.class)
+	public void testFindByIdWithoutPatientUsingJPQL() {
+		// given
+		Patient patient = PatientRepositoryTest.createTestPatient();
+		patientRepository.save(patient);
+		PatientVital patientVital = createTestPatientVial(patient);
+		patientVitalRepository.save(patientVital);
+
+		// when
+		Optional<PatientVital> patientVitalOptional = patientVitalRepository
+				.findByIdWithoutPatientUsingJPQL(patientVital.getId());
 
 		// then
 		assertThat(patientVitalOptional.isPresent(), is(true));

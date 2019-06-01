@@ -25,7 +25,8 @@ import javax.persistence.Table;
  */
 
 @NamedQueries(value = {
-		@NamedQuery(query = "SELECT pv FROM PatientVital pv", name = "PatientVital.findAll")
+		@NamedQuery(query = "SELECT pv FROM PatientVital pv", name = "PatientVital.findAll"),
+		@NamedQuery(query = "SELECT pv FROM PatientVital pv WHERE pv.id = :id", name = "PatientVital.findById")
 })
 @NamedEntityGraphs(value = { @NamedEntityGraph(name = "PatientVital.graph1", attributeNodes = {
 		@NamedAttributeNode(value = "vital"), @NamedAttributeNode(value = "value"),

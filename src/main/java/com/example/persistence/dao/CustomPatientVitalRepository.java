@@ -14,5 +14,9 @@ import com.example.persistence.model.PatientVital;
 public interface CustomPatientVitalRepository {
 	
 	public Optional<PatientVital> findByIdWithPatient(final Integer id);
+	
+	public Optional<PatientVital> findByIdWithPatientUsingJPQL(final Integer id);
+	
+	public Optional<PatientVital> findByIdWithoutPatientUsingJPQL(final Integer id);
 
 }
