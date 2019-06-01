@@ -4,6 +4,7 @@
 package com.example.persistence.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
@@ -41,6 +42,21 @@ public interface PatientVitalRepository extends JpaRepository<PatientVital, Inte
 	@Query(value = "SELECT pv FROM PatientVital pv")
 	public List<PatientVital> findAllPatientVitals(Sort sort);
 	
+	/**
+	 * We can use @EntityGraph on query method to provide EntityGraph to be used to
+	 * fetch entity. type attribute is used to specify mode of EntityGraph Fetch
+	 * 
+	 * @return PatientVitals with Patient association loaded eagerly.
+	 */
 	@EntityGraph(value = "PatientVital.graph1", type = EntityGraphType.FETCH)
 	public List<PatientVital> getPatientVitalByIsDeleted(boolean isDeleted);
+	
+	/**
+	 * This is how we can define AD-HOC entity graph definition on an repository
+	 * query method. NOTE: I THINK, we can define entity graph at root entity level
+	 * only and can not define subgraphs using this approach, spring document also
+	 * does not say anything about AD-HOC subgraphs definitions
+	 */
+	@EntityGraph(attributePaths = { "vital", "value", "patient" }, type = EntityGraphType.FETCH)
+	public Optional<PatientVital> getPatientVitalWithPatientById(final Integer id);
 }
