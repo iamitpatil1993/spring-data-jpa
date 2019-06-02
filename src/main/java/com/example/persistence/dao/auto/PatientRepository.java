@@ -27,6 +27,7 @@ import com.example.persistence.dao.AnotherCustomPatientRepository;
 import com.example.persistence.dao.BaseEntityRepository;
 import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.dao.projections.PatientNameProjection;
+import com.example.persistence.dao.projections.PatientProjection;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.VitalType;
@@ -301,4 +302,6 @@ public interface PatientRepository extends BaseEntityRepository<Patient, Integer
 	 * @return Subset of patient attributes via Projection interface proxy.
 	 */
 	public Optional<PatientNameProjection> findPatientNamesById(final Integer id);
+	
+	public Optional<PatientProjection> findPatientUsingProjectionById(final Integer id);
 }

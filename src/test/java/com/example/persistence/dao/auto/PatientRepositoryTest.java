@@ -53,11 +53,14 @@ import org.springframework.util.concurrent.ListenableFuture;
 import com.example.persistence.BaseTest;
 import com.example.persistence.dao.PatientVitalRepository;
 import com.example.persistence.dao.projections.PatientNameProjection;
+import com.example.persistence.dao.projections.PatientProjection;
+import com.example.persistence.model.Gender;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.QPatient;
 import com.example.persistence.model.VitalType;
 import com.example.persistence.service.PatientService;
+import com.example.persistence.util.Utils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // just for readability of logs (queries executed by test cases)
@@ -71,6 +74,9 @@ public class PatientRepositoryTest extends BaseTest {
 	
 	@Autowired
 	private PatientService patientService;
+	
+	@Autowired
+	private Utils utils;
 	
 	/**
 	 * QueryByExampleExecutor: count  
@@ -1495,6 +1501,31 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientName.get().getLastName(), is(equalTo(patient.getLastName())));
 	}
 	
+	/**
+	 * Projections: Interface based close projection.
+	 */
+	@Test
+	public void testFindPatientUsingProjectionById() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		// when
+		Optional<PatientProjection> patientName = patientRepository.findPatientUsingProjectionById(patient.getId());
+
+		// then
+		String expectedFullName = patient.getFirstName().concat(" ").concat(patient.getLastName());
+		String expectedFullNameWithSalutation = new StringBuilder(
+				patient.getGender().equals(Gender.MALE) ? "Mr" : "Mrs").append(" ").append(expectedFullName).toString();
+		Integer expectedAge = utils.getAgeFromDob(patient.getDob());
+		String expectedGenderString = patient.getGender().toString();
+		assertThat(patientName.isPresent(), is(true));
+		assertThat(patientName.get().getFullName(), is(equalTo(expectedFullName)));
+		assertThat(patientName.get().getFullNameWithSalutation(), is(equalTo(expectedFullNameWithSalutation)));
+		assertThat(patientName.get().getAge(), is(equalTo(expectedAge)));
+		assertThat(patientName.get().getGenderAsAString(), is(equalTo(expectedGenderString)));
+	}
+
 	@After
 	@Before
 	public void beforeAndAfterTest() {
@@ -1514,6 +1545,7 @@ public class PatientRepositoryTest extends BaseTest {
 		dob.add(Calendar.YEAR, -20);
 		patient.setDob(dob);
 		patient.setSsn(UUID.randomUUID().toString());
+		patient.setGender(Gender.values()[ThreadLocalRandom.current().nextInt(0, Gender.values().length -1)]);
 
 		List<String> bloodGroups = Arrays.asList("O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+");
 		patient.setBloodGroup(bloodGroups.get(ThreadLocalRandom.current().nextInt(0, 8)));

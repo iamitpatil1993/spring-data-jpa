@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -55,6 +57,11 @@ public class Patient extends BaseEntity {
 
 	@OneToMany(mappedBy = "patient")
 	private Set<PatientVital> vitals = new HashSet<>();
+	
+	@Basic
+	@Enumerated(EnumType.STRING)
+	@Column(name = "gender")
+	private Gender gender;
 
 	public String getFirstName() {
 		return firstName;
@@ -94,6 +101,14 @@ public class Patient extends BaseEntity {
 
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
 	}
 
 }
