@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.example.persistence.dao;
+package com.example.persistence.dao.projections;
 
 /**
  * Projection interface for patient to get subset of paient details (only names)

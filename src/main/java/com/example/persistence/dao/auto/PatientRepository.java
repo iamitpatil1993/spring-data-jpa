@@ -26,7 +26,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import com.example.persistence.dao.AnotherCustomPatientRepository;
 import com.example.persistence.dao.BaseEntityRepository;
 import com.example.persistence.dao.CustomPatientRepository;
-import com.example.persistence.dao.PatientNameProjection;
+import com.example.persistence.dao.projections.PatientNameProjection;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.VitalType;

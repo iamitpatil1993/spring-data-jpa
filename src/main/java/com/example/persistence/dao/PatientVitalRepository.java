@@ -16,6 +16,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.persistence.dao.projections.PatientVitalProjection;
+import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 
 /**
@@ -69,4 +71,5 @@ public interface PatientVitalRepository extends JpaRepository<PatientVital, Inte
 	@Query(value = "SELECT pv FROM PatientVital pv WHERE pv.isDeleted = false AND pv.id = ?1")
 	public Optional<PatientVital> findPatientVitalByIdUsingEntityGrapghAndCustomQuery(final Integer id);
 	
+	public List<PatientVitalProjection> findAllByPatient(final Patient patient);
 }

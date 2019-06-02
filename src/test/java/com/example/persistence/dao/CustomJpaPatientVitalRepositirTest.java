@@ -2,8 +2,10 @@ package com.example.persistence.dao;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -20,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.example.persistence.BaseTest;
 import com.example.persistence.dao.auto.PatientRepository;
 import com.example.persistence.dao.auto.PatientRepositoryTest;
+import com.example.persistence.dao.projections.PatientVitalProjection;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.VitalType;
@@ -168,6 +171,36 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 		assertThat(optionalPatientVtial.isPresent(), is(true));
 		assertThat(optionalPatientVtial.get().getPatient(), is(notNullValue()));
 		assertThat(optionalPatientVtial.get().getPatient().getId(), is(patient.getId()));
+	}
+	
+	/**
+	 * Projections : Projection using Interface based projections with Nested associations.
+	 */
+	@Test
+	public void testFindAllByPatient() {
+		// given
+		Patient patient = PatientRepositoryTest.createTestPatient();
+		patientRepository.save(patient);
+		PatientVital patientVital = createTestPatientVial(patient);
+		patientVitalRepository.save(patientVital);
+
+		// when
+		List<PatientVitalProjection> patientVitals = patientVitalRepository.findAllByPatient(patient);
+
+		// then
+		assertThat(patientVitals, is(not(empty())));
+		assertThat(patientVitals.size(), is(1));
+		patientVitals.stream().forEach(patientVitalProj -> {
+			// assert patient vital projection
+			assertThat(patientVitalProj.getVital(), is(equalTo(patientVital.getVital())));
+			assertThat(patientVitalProj.getValue(), is(equalTo(patientVital.getValue())));
+
+			// assert patient projection
+			assertThat(patientVitalProj.getPatient(), is(notNullValue()));
+			assertThat(patientVitalProj.getPatient().getFirstName(), is(patient.getFirstName()));
+			assertThat(patientVitalProj.getPatient().getLastName(), is(patient.getLastName()));
+			assertThat(patientVitalProj.getPatient().getId(), is(patient.getId()));
+		});
 	}
 
 	private PatientVital createTestPatientVial(Patient patient) {

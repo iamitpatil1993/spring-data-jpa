@@ -51,8 +51,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import com.example.persistence.BaseTest;
-import com.example.persistence.dao.PatientNameProjection;
 import com.example.persistence.dao.PatientVitalRepository;
+import com.example.persistence.dao.projections.PatientNameProjection;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.QPatient;
