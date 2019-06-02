@@ -26,6 +26,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import com.example.persistence.dao.AnotherCustomPatientRepository;
 import com.example.persistence.dao.BaseEntityRepository;
 import com.example.persistence.dao.CustomPatientRepository;
+import com.example.persistence.dao.PatientNameProjection;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
 import com.example.persistence.model.VitalType;
@@ -288,4 +289,16 @@ public interface PatientRepository extends BaseEntityRepository<Patient, Integer
 	@Modifying(flushAutomatically = true) 
 	@Query(value = "UPDATE Patient p SET p.firstName = ?1, p.lastName = ?2 WHERE p.id = ?3")
 	public int updateNameWithFlushingExistinChanges(final String fName, final String lName, final Integer id);
+	
+	/**
+	 * Just use return type of Projection interface, and spring will handle
+	 * everything Spring will create optimized query (select clause) to fetch only
+	 * properties defined in Projection interface.
+	 * 
+	 * If we check query executed, spring will not select entire entity, rather
+	 * select clause will only contain properties defined in PatientNameProjection
+	 * 
+	 * @return Subset of patient attributes via Projection interface proxy.
+	 */
+	public Optional<PatientNameProjection> findPatientNamesById(final Integer id);
 }

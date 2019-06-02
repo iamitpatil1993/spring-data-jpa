@@ -51,6 +51,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import com.example.persistence.BaseTest;
+import com.example.persistence.dao.PatientNameProjection;
 import com.example.persistence.dao.PatientVitalRepository;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
@@ -1446,18 +1447,6 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientsWithHypertension.stream().map(Patient::getId).collect(Collectors.toList()), hasItems(anotherPatient.getId()));
 	}
 	
-	/*
-	 * Sorting based on nested/associated entity's property
-	 * NOTE: We can not do this in case of Collection association and can only be done in case of single value association.
-	 * In case of collection association, we need to join related entity manually in JPQL
-	 * Refer : https://stackoverflow.com/questions/24750754/org-hibernate-queryexception-illegal-attempt-to-dereference-collection
-	 */
-	@Test
-	public void testFindAllPatientVitals() {
-		// when
-		 patientVitalRepository.findAllPatientVitals(Sort.by(Order.asc("patient.createdDate")));
-	}
-	
 	@Test
 	public void testGetCreatedDateById() {
 		// given
@@ -1485,6 +1474,25 @@ public class PatientRepositoryTest extends BaseTest {
 		// then
 		assertTrue(isExists);
 		assertFalse(isExists2);
+	}
+	
+	/**
+	 * Projections: Interface based open projection.
+	 */
+	@Test
+	public void testfindPatientNames() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		Optional<PatientNameProjection> patientName = patientRepository.findPatientNamesById(patient.getId());
+		
+		// then
+		assertThat(patientName.isPresent(), is(true));
+		assertThat(patientName.get().getId(), is(equalTo(patient.getId())));
+		assertThat(patientName.get().getFirstName(), is(equalTo(patient.getFirstName())));
+		assertThat(patientName.get().getLastName(), is(equalTo(patient.getLastName())));
 	}
 	
 	@After
