@@ -59,4 +59,14 @@ public interface PatientVitalRepository extends JpaRepository<PatientVital, Inte
 	 */
 	@EntityGraph(attributePaths = { "vital", "value", "patient" }, type = EntityGraphType.FETCH)
 	public Optional<PatientVital> getPatientVitalWithPatientById(final Integer id);
+	
+	/**
+	 * Entity Graph: We can use @EntityGraph annotation to specify entity graph to be used while 
+	 * fetching entities using JPQL as well.
+	 * We must use appropriate EntityGraph for projection in query.
+	 */
+	@EntityGraph(value = "PatientVital.graph1", type = EntityGraphType.FETCH)
+	@Query(value = "SELECT pv FROM PatientVital pv WHERE pv.isDeleted = false AND pv.id = ?1")
+	public Optional<PatientVital> findPatientVitalByIdUsingEntityGrapghAndCustomQuery(final Integer id);
+	
 }

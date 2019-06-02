@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.LazyInitializationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 	/**
 	 * Object graph will load patient entity (in single value association) despite it is marked to be loaded lazily
 	 */
-	//@Test
+	@Test
 	public void testFindByIdWithPatient() {
 		// given
 		Patient patient = PatientRepositoryTest.createTestPatient();
@@ -59,7 +60,7 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 	 * lazy, patinet will not be fetched in default entity fetch graph used by
 	 * spring generated repo. impl.
 	 */
-	//@Test(expected = LazyInitializationException.class)
+	@Test(expected = LazyInitializationException.class)
 	public void testFindByIdWithoutPatient() {
 		// given
 		Patient patient = PatientRepositoryTest.createTestPatient();
@@ -75,7 +76,7 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 		assertThat(patientVitalOptional.get().getPatient(), is(nullValue()));
 	}
 	
-	//@Test
+	@Test
 	public void testFindByIdWithPatientUsingJPQL() {
 		// given
 		Patient patient = PatientRepositoryTest.createTestPatient();
@@ -92,7 +93,7 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 		assertThat(patientVitalOptional.get().getPatient().getId(), is(equalTo(patient.getId())));
 	}
 	
-	//@Test(expected = LazyInitializationException.class)
+	@Test(expected = LazyInitializationException.class)
 	public void testFindByIdWithoutPatientUsingJPQL() {
 		// given
 		Patient patient = PatientRepositoryTest.createTestPatient();
@@ -109,7 +110,7 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 		assertThat(patientVitalOptional.get().getPatient(), is(nullValue()));
 	}
 	
-	//@Test
+	@Test
 	public void testGetPatientVitalByIsDeleted() {
 		// given
 		Patient patient = PatientRepositoryTest.createTestPatient();
@@ -145,6 +146,28 @@ public class CustomJpaPatientVitalRepositirTest extends BaseTest {
 		assertThat(patientVitals.get().getPatient().getId(), is(equalTo(patient.getId())));
 		assertThat(patientVitals.get().getPatient().getFirstName(), is(notNullValue()));
 		assertThat(patientVitals.get().getPatient().getFirstName(), is(equalTo(patient.getFirstName())));
+	}
+
+	/**
+	 * Entity Graph: We can use @EntityGraph annotation to specify entity graph to be used while 
+	 * fetching entities using JPQL as well.
+	 */
+	@Test
+	public void testfindPatientVitalByIdUsingEntityGrapghAndCustomQuery() {
+		// given
+		Patient patient = PatientRepositoryTest.createTestPatient();
+		patientRepository.save(patient);
+		PatientVital patientVital = createTestPatientVial(patient);
+		patientVitalRepository.save(patientVital);
+
+		// when
+		Optional<PatientVital> optionalPatientVtial = patientVitalRepository
+				.findPatientVitalByIdUsingEntityGrapghAndCustomQuery(patientVital.getId());
+
+		// then
+		assertThat(optionalPatientVtial.isPresent(), is(true));
+		assertThat(optionalPatientVtial.get().getPatient(), is(notNullValue()));
+		assertThat(optionalPatientVtial.get().getPatient().getId(), is(patient.getId()));
 	}
 
 	private PatientVital createTestPatientVial(Patient patient) {
