@@ -54,6 +54,7 @@ import com.example.persistence.BaseTest;
 import com.example.persistence.dao.PatientVitalRepository;
 import com.example.persistence.dao.projections.PatientNameProjection;
 import com.example.persistence.dao.projections.PatientProjection;
+import com.example.persistence.dto.PatientNameDto;
 import com.example.persistence.model.Gender;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
@@ -1524,6 +1525,24 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientName.get().getFullNameWithSalutation(), is(equalTo(expectedFullNameWithSalutation)));
 		assertThat(patientName.get().getAge(), is(equalTo(expectedAge)));
 		assertThat(patientName.get().getGenderAsAString(), is(equalTo(expectedGenderString)));
+	}
+	
+	/**
+	 * Projections: DTO based open projection.
+	 */
+	@Test
+	public void testGetPatientNameDtoById() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+		
+		// when
+		Optional<PatientNameDto> patientName = patientRepository.getPatientNameDtoById(patient.getId());
+		
+		// then
+		assertThat(patientName.isPresent(), is(true));
+		assertThat(patientName.get().getFirstName(), is(equalTo(patient.getFirstName())));
+		assertThat(patientName.get().getLastName(), is(equalTo(patient.getLastName())));
 	}
 
 	@After
