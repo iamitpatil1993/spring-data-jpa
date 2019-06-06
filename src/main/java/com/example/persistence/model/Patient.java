@@ -18,6 +18,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author amit
  *
@@ -56,6 +59,8 @@ public class Patient extends BaseEntity {
 	private String bloodGroup;
 
 	@OneToMany(mappedBy = "patient")
+	@Getter
+	@Setter
 	private Set<PatientVital> vitals = new HashSet<>();
 	
 	@Basic

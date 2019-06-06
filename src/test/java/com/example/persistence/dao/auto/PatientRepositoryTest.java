@@ -54,6 +54,7 @@ import com.example.persistence.BaseTest;
 import com.example.persistence.dao.PatientVitalRepository;
 import com.example.persistence.dao.projections.PatientNameProjection;
 import com.example.persistence.dao.projections.PatientProjection;
+import com.example.persistence.dto.PatientDto;
 import com.example.persistence.dto.PatientNameDto;
 import com.example.persistence.model.Gender;
 import com.example.persistence.model.Patient;
@@ -1545,6 +1546,29 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(patientName.get().getLastName(), is(equalTo(patient.getLastName())));
 	}
 
+	/**
+	 * Projections: DTO based open projection. (DTO using Lombok)
+	 * PatientDto fetch all properties of patient. (not associations)
+	 */
+	@Test
+	public void testGetPatientDtoById() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		// when
+		Optional<PatientDto> optionalPatientDto = patientRepository.getPatientDtoById(patient.getId());
+
+		// then
+		assertThat(optionalPatientDto.isPresent(), is(true));
+		assertThat(optionalPatientDto.get().getId(), is(equalTo(patient.getId())));
+		assertThat(optionalPatientDto.get().getFirstName(), is(equalTo(patient.getFirstName())));
+		assertThat(optionalPatientDto.get().getLastName(), is(equalTo(patient.getLastName())));
+		assertThat(optionalPatientDto.get().getBloodGroup(), is(equalTo(patient.getBloodGroup())));
+		assertThat(optionalPatientDto.get().getGender(), is(equalTo(patient.getGender())));
+		assertThat(optionalPatientDto.get().getSsn(), is(equalTo(patient.getSsn())));
+	}	
+	
 	@After
 	@Before
 	public void beforeAndAfterTest() {

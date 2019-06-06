@@ -3,6 +3,7 @@
  */
 package com.example.persistence.dao.auto;
 
+import java.security.cert.PKIXRevocationChecker.Option;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import com.example.persistence.dao.BaseEntityRepository;
 import com.example.persistence.dao.CustomPatientRepository;
 import com.example.persistence.dao.projections.PatientNameProjection;
 import com.example.persistence.dao.projections.PatientProjection;
+import com.example.persistence.dto.PatientDto;
 import com.example.persistence.dto.PatientNameDto;
 import com.example.persistence.model.Patient;
 import com.example.persistence.model.PatientVital;
@@ -307,4 +309,6 @@ public interface PatientRepository extends BaseEntityRepository<Patient, Integer
 	public Optional<PatientProjection> findPatientUsingProjectionById(final Integer id);
 	
 	public Optional<PatientNameDto> getPatientNameDtoById(final Integer id);
+	
+	public Optional<PatientDto> getPatientDtoById(final Integer id);
 }
