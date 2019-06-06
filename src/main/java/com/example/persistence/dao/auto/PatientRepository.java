@@ -3,7 +3,6 @@
  */
 package com.example.persistence.dao.auto;
 
-import java.security.cert.PKIXRevocationChecker.Option;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +17,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
@@ -310,5 +310,29 @@ public interface PatientRepository extends BaseEntityRepository<Patient, Integer
 	
 	public Optional<PatientNameDto> getPatientNameDtoById(final Integer id);
 	
+	/**
+	 * Even though query methods and repository implementations are by default transactional, we can use this annotation to override 
+	 * default transaction configuration.
+	 */
+	@Transactional(readOnly = true, timeout = 5) 
 	public Optional<PatientDto> getPatientDtoById(final Integer id);
+	
+	/**
+	 * If we want to override default transaction configuration in repository
+	 * implementation, (like SimpleJpaRepository) we can override, redeclare
+	 * repository method in our repository interface with @Transactional annotation
+	 * to customize the transactional configuration.
+	 * 
+	 * This method overrides transaction configuration of
+	 * {@link CrudRepository#findById(Object)}, setting smaller timeout value.
+	 * 
+	 * NOTE: Ideally we should not define transactional configuration on repository
+	 * method, rather service classes who calls repositories should define
+	 * transaction demarcation and configuration. And we should stick to default
+	 * transaction configuration provide by spring on query methods and repository
+	 * methods.
+	 */
+	@Override
+	@Transactional(readOnly = true, timeout = 3)
+	Optional<Patient> findById(Integer id);
 }
