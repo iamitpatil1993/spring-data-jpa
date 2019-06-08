@@ -1569,6 +1569,30 @@ public class PatientRepositoryTest extends BaseTest {
 		assertThat(optionalPatientDto.get().getSsn(), is(equalTo(patient.getSsn())));
 	}	
 	
+	/**
+	 * Projections: DTO based open projection. (DTO using Lombok)
+	 * PatientDto fetch all properties of patient. (not associations)
+	 * Using custom JPQL query with Constructor and NEW keyword in JPQL.
+	 */
+	@Test
+	public void testGetPatientDtoByIdUsingCustomQuery() {
+		// given
+		Patient patient = createTestPatient();
+		patientRepository.save(patient);
+
+		// when
+		Optional<PatientDto> optionalPatientDto = patientRepository.getPatientDtoByIdUsingCustomQuery(patient.getId());
+
+		// then
+		assertThat(optionalPatientDto.isPresent(), is(true));
+		assertThat(optionalPatientDto.get().getId(), is(equalTo(patient.getId())));
+		assertThat(optionalPatientDto.get().getFirstName(), is(equalTo(patient.getFirstName())));
+		assertThat(optionalPatientDto.get().getLastName(), is(equalTo(patient.getLastName())));
+		assertThat(optionalPatientDto.get().getBloodGroup(), is(equalTo(patient.getBloodGroup())));
+		assertThat(optionalPatientDto.get().getGender(), is(equalTo(patient.getGender())));
+		assertThat(optionalPatientDto.get().getSsn(), is(equalTo(patient.getSsn())));
+	}	
+	
 	@After
 	@Before
 	public void beforeAndAfterTest() {

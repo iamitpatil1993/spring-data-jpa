@@ -335,4 +335,17 @@ public interface PatientRepository extends BaseEntityRepository<Patient, Integer
 	@Override
 	@Transactional(readOnly = true, timeout = 3)
 	Optional<Patient> findById(Integer id);
+	
+	/**
+	 * we can use JPQL NEW keyword with DTO and Constructor to get data. By default
+	 * projections using DTO does not support nested objects/association, but by
+	 * invoking constructor manually and passing fields to constructor we can select
+	 * associated objects as well using DTO but for that we need to write JPQL
+	 * manually and need to invoke constructor mannually.
+	 * 
+	 * This can be achieved by creating constructor that takes associated entity
+	 * attributes as well.
+	 */
+	@Query(value = "SELECT NEW com.example.persistence.dto.PatientDto(p.id, p.firstName, p.lastName, p.dob, p.ssn, p.bloodGroup, p.gender) FROM Patient p WHERE p.id = ?1 AND p.isDeleted = false")
+	public Optional<PatientDto> getPatientDtoByIdUsingCustomQuery(final Integer id);
 }
