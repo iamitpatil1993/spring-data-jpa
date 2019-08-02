@@ -103,8 +103,8 @@ public class AppPersistenceConfiguration {
 	@Profile(value = { "int", "prod" })
 	public JpaVendorAdapter hibernateJpaVendorAdapter() {
 		HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-		jpaVendorAdapter.setDatabase(Database.POSTGRESQL);
-		jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
+		jpaVendorAdapter.setDatabase(Database.MYSQL);
+		jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQL57Dialect");
 		jpaVendorAdapter.setGenerateDdl(true);
 		jpaVendorAdapter.setShowSql(true);
 

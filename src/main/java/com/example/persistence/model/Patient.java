@@ -7,16 +7,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +21,7 @@ import lombok.Setter;
 	@NamedQuery(name = "Patient.findAllHypertensionPatients", query = "SELECT p FROM Patient p JOIN p.vitals v WHERE p.isDeleted = false AND v.isDeleted = false AND ((v.vital = 'SYS_BP' AND v.value > 140) OR (v.vital = 'DI_BP' AND v.value > 90))")
 })
 @Entity
+@Table(name = "patient")
 public class Patient extends BaseEntity {
 
 	/**

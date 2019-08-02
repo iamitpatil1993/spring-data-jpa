@@ -44,7 +44,7 @@ public class AppManagedJpaPropertySource implements JpaPropertySource {
 		map.put("javax.persistence.jdbc.url", this.environment.getProperty("db_connection_url"));
 		map.put("javax.persistence.jdbc.user", this.environment.getProperty("DB_USER"));
 		map.put("javax.persistence.jdbc.password", this.environment.getProperty("DB_PASSWORD"));
-		map.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
+		map.put("javax.persistence.jdbc.driver", "com.mysql.cj.jdbc.Driver");
 
 		return map;
 	}

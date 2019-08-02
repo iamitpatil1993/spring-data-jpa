@@ -85,7 +85,7 @@ public class PatientServiceTest extends BaseTest {
 		stopWatch.stop();
 		
 		// then
-		assertThat(stopWatch.getLastTaskTimeMillis(), is(lessThan(new Long(sleepMiliSeconds))));
+		assertThat(stopWatch.getLastTaskTimeMillis(), is(lessThan(Long.valueOf(sleepMiliSeconds))));
 	}
 	
 	
@@ -101,7 +101,7 @@ public class PatientServiceTest extends BaseTest {
 		stopWatch.stop();
 		
 		// then
-		assertThat(stopWatch.getLastTaskTimeMillis(), is(lessThan(new Long(sleepMiliSeconds))));
+		assertThat(stopWatch.getLastTaskTimeMillis(), is(lessThan(Long.valueOf(sleepMiliSeconds))));
 		assertThat(future.isDone(), is(false));
 		// future.get(); // this will be blocking this thread and will wait until async task complete, use ListenableFuture instead.
 	}
@@ -127,7 +127,7 @@ public class PatientServiceTest extends BaseTest {
 		});
 		
 		// assert method executed asynchronously
-		assertThat(stopWatch.getLastTaskTimeMillis(), is(lessThan(new Long(sleepMiliSeconds))));
+		assertThat(stopWatch.getLastTaskTimeMillis(), is(lessThan(Long.valueOf(sleepMiliSeconds))));
 		assertThat(future.isDone(), is(false));
 	}
 	

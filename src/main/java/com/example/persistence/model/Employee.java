@@ -1,11 +1,7 @@
 package com.example.persistence.model;
 
+import javax.persistence.*;
 import java.util.Calendar;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * @author amit
@@ -13,6 +9,7 @@ import javax.persistence.TemporalType;
  */
 
 @Entity
+@Table(name = "employee")
 public class Employee extends BaseEntity {
 
 	@Column(name = "first_name")
