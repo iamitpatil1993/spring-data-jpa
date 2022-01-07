@@ -152,7 +152,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.199</version>
+			<version>2.0.206</version>
 			<scope>compile</scope> <!-- in order to access it's web server, need to change dependency to compile, 
 				because we are using org.h2.Server at compile time -->
 		</dependency>
