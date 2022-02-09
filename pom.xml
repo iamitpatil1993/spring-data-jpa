@@ -18,7 +18,7 @@
 		<spring.framework.version>5.1.8.RELEASE</spring.framework.version>
 		<spring.data.version>Lovelace-SR9</spring.data.version>
 		<junit.version>4.12</junit.version>
-		<hibernate-version>5.4.4.Final</hibernate-version>
+		<hibernate-version>5.4.24.Final</hibernate-version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
 		<javax.validation.version>2.0.1.Final</javax.validation.version>
 		<datasource.hikaricp.version>3.3.1</datasource.hikaricp.version>
