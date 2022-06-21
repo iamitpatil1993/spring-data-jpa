@@ -24,7 +24,7 @@
 		<datasource.hikaricp.version>3.3.1</datasource.hikaricp.version>
 		<java.version>11</java.version>
 		<querydsl-version>4.2.1</querydsl-version>
-		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
+		<mysql-connector-java.version>8.0.28</mysql-connector-java.version>
 	</properties>
 
 	<dependencyManagement>
